@@ -1,6 +1,6 @@
 /** @type {import('next-sitemap').IConfig} */
 module.exports = {
-  siteUrl: "https://lymbrarie.gixi.dev",
+  siteUrl: "https://lymbrarie.vercel.app",
   generateRobotsTxt: true,
   exclude: [
     "/error",
@@ -21,8 +21,8 @@ module.exports = {
   ],
   robotsTxtOptions: {
     additionalSitemaps: [
-      "https://lymbrarie.gixi.dev/sitemap.xml",
-      "https://lymbrarie.gixi.dev/sitemap-0.xml",
+      "https://lymbrarie.vercel.app/sitemap.xml",
+      "https://lymbrarie.vercel.app/sitemap-0.xml",
     ],
   },
 };

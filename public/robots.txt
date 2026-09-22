@@ -3,8 +3,8 @@ User-agent: *
 Allow: /
 
 # Host
-Host: https://lymbrarie.gixi.dev
+Host: https://lymbrarie.vercel.app
 
 # Sitemaps
-Sitemap: https://lymbrarie.gixi.dev/sitemap.xml
-Sitemap: https://lymbrarie.gixi.dev/sitemap-0.xml
+Sitemap: https://lymbrarie.vercel.app/sitemap.xml
+Sitemap: https://lymbrarie.vercel.app/sitemap-0.xml

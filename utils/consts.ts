@@ -3,7 +3,7 @@ import { collection, type CollectionReference } from "firebase/firestore";
 import type { Book, BookData } from "./types";
 import { BOOK_STATES } from "./states";
 
-const BASE_URL: string = "https://lymbrarie.gixi.dev";
+const BASE_URL: string = "https://lymbrarie.vercel.app";
 
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ducssjlkl/image/upload";
 

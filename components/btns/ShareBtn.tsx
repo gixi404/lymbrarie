@@ -35,7 +35,7 @@ function handleShare(title: string): void {
   if (stateCont instanceof HTMLElement) stateCont.style.opacity = "0";
   if (iconsClone instanceof HTMLElement) iconsClone.style.opacity = "0";
 
-  watermark.textContent = "lymbrarie.gixi.dev";
+  watermark.textContent = "lymbrarie.vercel.app";
   watermark.style.position = "absolute";
   watermark.style.bottom = "8px";
   watermark.style.right = "12px";
