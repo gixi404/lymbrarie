@@ -47,7 +47,6 @@ export default function SearchIndex(): Component {
               className="focus:outline-0 focus:border-rose-300/10 backdrop-blur-[2px] input join-item flex-1 min-w-0 sm:w-[300px] h-14 bg-slate-800/60 border-2 border-rose-300/10 placeholder:text-slate-300/70 text-sm sm:text-lg text-slate-300 placeholder:w-full"
               placeholder="Busca en tu biblioteca"
               type="search"
-              autoFocus
             />
             <Select
               className="join-item capitalize text-xs md:text-[17px] text-slate-300/70"

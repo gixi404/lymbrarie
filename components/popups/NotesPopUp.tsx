@@ -83,7 +83,7 @@ function NotesPopUp(props: Props): Component {
   return (
     <DialogContainer
       id="notes"
-      divClass="!max-w-[1200px] max-h-[950px] !h-full sm:!mt-6 !overflow-hidden !bg-slate-800 !p-0 !border-4"
+      divClass="!max-w-[1200px] max-h-[950px] sm:!h-[calc(100vh-3rem)] sm:!my-6 !overflow-hidden !bg-slate-800 !p-0 !border-4"
     >
       <div className="w-full h-full flex flex-col relative">
         {editorLoading && (

@@ -19,10 +19,15 @@ function useLocalStorage<T>(key: string, initialValue: T) {
         ) {
           return initialValue;
         }
+        if (typeof parsed === "string" && parsed.startsWith("U2FsdGVk")) {
+          return initialValue;
+        }
         return parsed as T;
       } catch {
-        // Fallback for unparseable legacy raw strings: only use item if initialValue is a string
-        return typeof initialValue === "string" ? (item as unknown as T) : initialValue;
+        // Fallback for unparseable legacy raw strings: only use item if initialValue is a string and not encrypted ciphertext
+        return typeof initialValue === "string" && !item.startsWith("U2FsdGVk")
+          ? (item as unknown as T)
+          : initialValue;
       }
     } catch {
       return initialValue;

@@ -31,7 +31,8 @@ function ProfilePage(): Component {
     email: string = user?.email ?? "",
     { isGuest } = useGuest(),
     [nameuser] = useLocalStorage("username", ""),
-    username = nameuser.trim() == "" ? name : nameuser,
+    username =
+      nameuser.trim() === "" || nameuser.startsWith("U2FsdGVk") ? name : nameuser,
     [cacheBooks] = useLocalStorage<Book[] | null>("cache-books", null),
     [styles] = useSpring(() => animateOpacity(1, 400)),
     { isMobile } = useIsMobile(),
