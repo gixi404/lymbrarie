@@ -6,7 +6,7 @@ import { noop } from "es-toolkit";
 import { useRecoilState } from "recoil";
 import type { Component } from "@/utils/types";
 import { useEffect, useRef } from "react";
-import { useVirtualizer } from "@tanstack/react-virtual";
+import { useWindowVirtualizer } from "@tanstack/react-virtual";
 
 export default function ListBooks(props: Props): Component {
   const { listBooks, renderItem, showDetails } = props,
@@ -16,11 +16,12 @@ export default function ListBooks(props: Props): Component {
     [animations] = useLocalStorage("animations", true),
     [styles, api] = useSpring(() => noop()),
     parentRef = useRef<HTMLDivElement>(null),
-    rowVirtualizer = useVirtualizer({
+    rowVirtualizer = useWindowVirtualizer({
       count: listBooks.length,
-      getScrollElement: () => parentRef.current,
-      estimateSize: () => (showDetails ? 145 : 75),
+      estimateSize: () => (showDetails ? 130 : 60),
+      gap: showDetails ? 16 : 7,
       overscan: 5,
+      scrollMargin: parentRef.current?.offsetTop ?? 0,
     });
 
   useEffect(() => {
@@ -34,7 +35,6 @@ export default function ListBooks(props: Props): Component {
       className="mb-36 flex flex-col justify-start w-full items-center sm:overflow-hidden h-auto"
       data-testid="list-books"
       ref={parentRef}
-      key={String(showDetails)}
     >
       <div
         style={{
@@ -53,11 +53,15 @@ export default function ListBooks(props: Props): Component {
                 top: 0,
                 left: 0,
                 width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
+                transform: `translateY(${
+                  virtualRow.start - rowVirtualizer.options.scrollMargin
+                }px)`,
               }}
               data-index={virtualRow.index}
-              ref={rowVirtualizer.measureElement}
+              ref={el => {
+                rowVirtualizer.measureElement(el);
+                if (el) console.log("medido:", virtualRow.index, el.getBoundingClientRect().height);
+              }}
             >
               {renderItem(item, virtualRow.index)}
             </div>

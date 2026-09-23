@@ -48,13 +48,15 @@ function Layout({ children }: PropsWithChildren): Component {
           "relative overflow-y-hidden overflow-x-hidden min-h-screen w-full bg-slate-950 font-mono flex flex-col justify-start items-center"
         )}
       >
+        <Background />
         <IsOffline />
         <Toaster reverseOrder={false} position="top-right" />
-        <HeaderIndex />
-        {children}
-        <Background />
+        <div className="relative z-10 w-full flex flex-col justify-start items-center flex-1">
+          <HeaderIndex />
+          {children}
+          {path != PAGES.LOGIN && <FooterIndex />}
+        </div>
         <AllPopups UID={user?.id as string} />
-        {path != PAGES.LOGIN && <FooterIndex />}
       </div>
     </JustClient>
   );

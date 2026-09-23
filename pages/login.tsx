@@ -4,7 +4,6 @@ import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import LoaderCircle from "@/components/LoaderCircle";
-import OpenSourceLink from "@/components/OpenSourceLink";
 import { animateOpacity } from "@/utils/helpers";
 import { animated, useSpring } from "@react-spring/web";
 import { AuthAction, withUser } from "next-firebase-auth";
@@ -172,11 +171,6 @@ function LoginPage(): Component {
           </p>
         </article>
       </section>
-
-      {/* <div className="space-y-4 mb-8"> */}
-      <OpenSourceLink />
-      {/* <StarOnGithubBtn /> */}
-      {/* </div> */}
 
       <FooterIndex />
     </animated.section>

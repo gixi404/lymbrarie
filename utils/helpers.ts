@@ -18,9 +18,13 @@ function selectStyles(
       ...s,
       color: normal ? "#e2e8f0" : "rgb(203 213 225 / 0.7)",
     }),
+    valueContainer: (s: StylesConfig) => ({
+      ...s,
+      padding: isMobile ? "2px 4px" : "2px 8px",
+    }),
     control: (s: StylesConfig) => ({
       ...s,
-      padding: "0 0.5rem",
+      padding: isMobile ? "0 0.25rem" : "0 0.5rem",
       backgroundColor: normal ? "transparent" : "rgb(30 41 59 / 0.6)",
       borderWidth: normal ? 1 : 2,
       borderColor: normal
@@ -28,7 +32,7 @@ function selectStyles(
         : showAll
         ? "rgb(253 164 175 / 0.1)"
         : "rgb(196 181 253 / 0.4)",
-      width: isMobile ? (normal ? "100%" : "135px") : normal ? "100%" : "180px",
+      width: isMobile ? (normal ? "100%" : "120px") : normal ? "100%" : "180px",
       height: normal ? "3rem" : "3.5rem",
       boxShadow: 0,
       borderTopLeftRadius: normal ? "0.8rem" : 0,
@@ -57,6 +61,7 @@ function selectStyles(
     }),
     dropdownIndicator: (s: StylesConfig) => ({
       ...s,
+      padding: isMobile ? "4px" : "8px",
       backgroundColor: "transparent",
       color: "rgba(167,139,250,0.7)",
       "&:hover": {

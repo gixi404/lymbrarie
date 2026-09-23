@@ -207,13 +207,16 @@ export default function InputCover(props: Props): Component {
           <p className="text-red-300 text-lg">Error cargando portada, reinténtalo</p>
         ) : (
           <p className="text-sm sm:text-lg text-slate-300 select-none">
-            {previewUrl && !coverLoading
-              ? "¡Portada lista!"
-              : coverLoading
-              ? "Generando portada..."
-              : isEditing
-              ? "Cambiar portada (clic, arrastrar o Ctrl+V)"
-              : "Agregar portada (clic, arrastrar o Ctrl+V)"}
+            {previewUrl && !coverLoading ? (
+              "¡Portada lista!"
+            ) : coverLoading ? (
+              "Generando portada..."
+            ) : (
+              <>
+                {isEditing ? "Cambiar portada" : "Agregar portada"}
+                <span className="hidden sm:inline"> (clic, arrastrar o Ctrl+V)</span>
+              </>
+            )}
           </p>
         )}
 
