@@ -181,7 +181,6 @@ function BookId(): Component {
         <div className="flex-shrink-0">
           <div className="md:bg-violet-500/10 p-1.5 rounded-xl">
             <Cover
-              priority
               style={stylesImg}
               className="select-none w-[200px] h-[300px] aspect-[2/3] rounded-lg object-cover"
               src={imgSrc}

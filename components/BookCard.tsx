@@ -49,7 +49,10 @@ const BookCard = memo(function BookCard({ data, showDetails }: Props): Component
   function onClick(): Promise<boolean> {
     if (isGuest) return guestBooks(data.title ?? "", push);
     setScroll(round(scrollY, 0));
-    return push(`${PAGES.BOOK}/${title}`);
+    return push(`${PAGES.BOOK}/${title}`).catch((err) => {
+      if (err?.cancelled) return false;
+      return false;
+    });
   }
 
   function renderCard(): Component {
@@ -71,30 +74,36 @@ const BookCard = memo(function BookCard({ data, showDetails }: Props): Component
 export default BookCard;
 
 function guestBooks(title: string, push: NextRouter["push"]): Promise<boolean> {
+  const safePush = (url: string) =>
+    push(url).catch((err) => {
+      if (err?.cancelled) return false;
+      return false;
+    });
+
   switch (title) {
     case "Orgullo y Prejuicio":
-      return push(`${PAGES.GUEST}/0`);
+      return safePush(`${PAGES.GUEST}/0`);
 
     case "Pride and Prejudice":
-      return push(`${PAGES.GUEST}/0`);
+      return safePush(`${PAGES.GUEST}/0`);
 
     case "1984":
-      return push(`${PAGES.GUEST}/1`);
+      return safePush(`${PAGES.GUEST}/1`);
 
     case "El Código Da Vinci":
-      return push(`${PAGES.GUEST}/2`);
+      return safePush(`${PAGES.GUEST}/2`);
 
     case "The Da Vinci Code":
-      return push(`${PAGES.GUEST}/2`);
+      return safePush(`${PAGES.GUEST}/2`);
 
     case "Harry Potter y la Piedra Filosofal":
-      return push(`${PAGES.GUEST}/3`);
+      return safePush(`${PAGES.GUEST}/3`);
 
     case "Harry Potter and the Philosopher's Stone":
-      return push(`${PAGES.GUEST}/3`);
+      return safePush(`${PAGES.GUEST}/3`);
 
     default:
-      return push(PAGES.LOGIN);
+      return safePush(PAGES.LOGIN);
   }
 }
 

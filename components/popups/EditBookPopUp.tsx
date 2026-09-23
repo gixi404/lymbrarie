@@ -87,8 +87,9 @@ function EditBookPopUp(props: Props): Component {
 
     const loaned: string = isLent(book.state ?? "") ? (book.loaned ?? "") : "",
       updatedData: BookData = { ...book, loaned },
-      oldVersion: Book[] = cacheBooks?.filter((b: Book) => b.id != documentId) ?? [],
-      newVersion: Book[] = [...oldVersion, { id: documentId, data }],
+      newVersion: Book[] = (cacheBooks ?? []).map((b: Book) =>
+        b.id === documentId ? { id: documentId, data: updatedData } : b
+      ),
       titlePage: string = encodeURIComponent(book.title ?? ""),
       newPath: string = `${PAGES.BOOK}/${titlePage}`,
       newTitles: string[] = [...allTitles, book.title ?? ""];
@@ -98,7 +99,10 @@ function EditBookPopUp(props: Props): Component {
       setCacheBooks(newVersion);
       setAllTitles(newTitles);
       setScrollLS(scroll);
-      await router.push(PAGES.HOME).then(() => router.push(newPath));
+      closePopUp("edit_book");
+      if (router.pathname.includes(PAGES.BOOK) && formatBookId !== book.title) {
+        await router.push(newPath);
+      }
     } catch (err: any) {
       router.push(PAGES.ERROR);
       console.error(`catch 'editBook' ${err.message}`);

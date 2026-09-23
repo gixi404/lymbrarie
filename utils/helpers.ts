@@ -12,13 +12,12 @@ function selectStyles(
       ...s,
       textAlign: "start",
       width: "100%",
-      color: normal
-        ? "#e2e8f0"
-        : showAll
-        ? "rgb(203 213 225 / 0.7)"
-        : "rgb(203 213 225)",
+      color: normal ? "#e2e8f0" : "rgb(203 213 225 / 0.7)",
     }),
-    singleValue: (s: StylesConfig) => ({ ...s }),
+    singleValue: (s: StylesConfig) => ({
+      ...s,
+      color: normal ? "#e2e8f0" : "rgb(203 213 225 / 0.7)",
+    }),
     control: (s: StylesConfig) => ({
       ...s,
       padding: "0 0.5rem",

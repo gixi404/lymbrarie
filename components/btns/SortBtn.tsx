@@ -15,6 +15,7 @@ function SortBtn(props: Props): Component {
 
   return (
     <button
+      aria-label="Cambiar orden de libros"
       type="button"
       title="Ordenar"
       className="btn btn-ghost btn-square"

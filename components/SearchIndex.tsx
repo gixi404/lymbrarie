@@ -57,7 +57,7 @@ export default function SearchIndex(): Component {
               autoFocus
             />
             <Select
-              className="join-item capitalize text-xs md:text-[17px] text-slate-900"
+              className="join-item capitalize text-xs md:text-[17px] text-slate-300/70"
               id="select-state"
               isSearchable={false}
               options={options}

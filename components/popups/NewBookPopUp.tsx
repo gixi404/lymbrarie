@@ -49,7 +49,7 @@ function NewBookPopUp({ UID }: Props): Component {
       const newVersion: Book[] = [...(cacheBooks ?? []), { id, data }];
       setCacheBooks(newVersion);
       setShowNoti(true);
-      router.reload();
+      closePopUp("add_book");
     } catch (err: any) {
       router.push(PAGES.ERROR);
       console.error(`catch 'newBook' ${err.message}`);

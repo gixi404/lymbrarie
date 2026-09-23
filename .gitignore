@@ -25,12 +25,6 @@ next-env.d.ts
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-firestore.rules
 /.vscode
 ui-debug.log
 firestore-debug.log
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-node_modules/

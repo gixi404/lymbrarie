@@ -15,6 +15,7 @@ function FavoritesBtn({ toggleFavs }: Props): Component {
 
   return (
     <button
+      aria-label="Filtrar por favoritos"
       title="Favoritos"
       className={twMerge(
         showFavs ? "bg-slate-700/45" : "bg-transparent",

@@ -4,8 +4,12 @@ service cloud.firestore {
 
   match /databases/{database}/documents {
     match /lymbrarie_books/{book} {
-      allow list, delete, update: if isAuthenticated() && isOwner();
-      allow create: if isAuthenticated();
+      allow get, list, delete, update: if isAuthenticated() && isOwner();
+      allow create: if isAuthenticated() && request.resource.data.owner == request.auth.uid;
+    }
+
+    match /lymbrarie_users/{userId} {
+      allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
   }
 

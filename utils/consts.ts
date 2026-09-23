@@ -8,6 +8,7 @@ const BASE_URL: string = "https://lymbrarie.vercel.app";
 const CLOUDINARY_URL = "https://api.cloudinary.com/v1_1/ducssjlkl/image/upload";
 
 const COLLECTION_BOOKS: CollectionReference = collection(DB, "lymbrarie_books");
+const COLLECTION_USERS: CollectionReference = collection(DB, "lymbrarie_users");
 
 const API_BOOKS: string = "https://www.googleapis.com/books/v1/volumes";
 
@@ -99,6 +100,7 @@ export {
   BASE_URL,
   CLOUDINARY_URL,
   COLLECTION_BOOKS,
+  COLLECTION_USERS,
   EMPTY_BOOK,
   EMPTY_BOOK_DATA,
   GENDERS,

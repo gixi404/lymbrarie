@@ -10,7 +10,9 @@ function DetailsBtn({ showDetails, onClick }: Props): Component {
   const [animate, setAnimate] = useRecoilState<boolean>(animListAtom);
 
   return (
-    <div
+    <button
+      type="button"
+      aria-label="Cambiar vista de detalles"
       title="Detalles"
       className="btn btn-ghost btn-square"
       onClick={e => {
@@ -19,7 +21,7 @@ function DetailsBtn({ showDetails, onClick }: Props): Component {
       }}
     >
       {showDetails ? <LayoutIcon /> : <ListIcon />}
-    </div>
+    </button>
   );
 }
 

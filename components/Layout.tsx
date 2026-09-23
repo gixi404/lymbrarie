@@ -9,15 +9,36 @@ import { Toaster } from "react-hot-toast";
 import { twJoin } from "tailwind-merge";
 import { usePathname } from "next/navigation";
 import "@fontsource/poppins";
-import { type PropsWithChildren } from "react";
+import { useRouter } from "next/router";
+import { useEffect, type PropsWithChildren } from "react";
 import { useUser, withUser, type User } from "next-firebase-auth";
 import type { Component } from "@/utils/types";
+import { runResumableNotesMigration } from "@/utils/userEncryption";
 
 export default withUser()(Layout);
 
 function Layout({ children }: PropsWithChildren): Component {
   const user: User = useUser();
   const path: string = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (user?.id) {
+      runResumableNotesMigration(user.id);
+    }
+  }, [user?.id]);
+
+  useEffect(() => {
+    const handleRouteChangeError = (err: { cancelled?: boolean }) => {
+      if (err?.cancelled) {
+        // Silently swallow route cancellation when user navigates quickly
+      }
+    };
+    router?.events?.on("routeChangeError", handleRouteChangeError);
+    return () => {
+      router?.events?.off("routeChangeError", handleRouteChangeError);
+    };
+  }, [router]);
 
   return (
     <JustClient>

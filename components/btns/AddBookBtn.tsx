@@ -20,6 +20,7 @@ export default function AddBookBtn(): Component {
         Añadir libro
       </button>
       <button
+        aria-label="Añadir libro"
         type="button"
         onClick={handleManualAdd}
         className="flex sm:hidden rounded-full fixed bottom-28 right-6 border-2 border-violet-400 w-16 h-16 justify-center items-center bg-violet-700 opacity-90 z-20"

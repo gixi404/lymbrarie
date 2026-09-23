@@ -8,6 +8,7 @@ function BackBtn(): Component {
   const { isGuest } = useGuest();
   return (
     <Link
+      aria-label="Volver a la vista principal"
       href={isGuest ? PAGES.GUEST : PAGES.HOME}
       className="sm:hidden absolute z-20 left-4 top-4"
     >
