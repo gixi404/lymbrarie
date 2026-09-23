@@ -42,6 +42,11 @@ import {
 } from "lucide-react";
 import { type NextRouter, useRouter } from "next/router";
 import { BookAdapters } from "@/adapters/book.adapters";
+import {
+  decryptDataV2,
+  encryptDataV2,
+  getOrCreateUserKey,
+} from "@/utils/userEncryption";
 
 export default withUser({
   whenAuthed: AuthAction.RENDER,
@@ -90,36 +95,61 @@ function BookId(): Component {
     if (!navigator.onLine) return;
     const unsub: Unsubscribe = onAuthStateChanged(auth, () => noop());
     return () => unsub();
-  }, [bookTitle, auth]);
+  }, [bookTitle, auth, user?.id]);
 
   useEffect(() => {
     if (!router.isReady || !title) return;
     if (notExist) router.push(PAGES.HOME);
   }, [notExist, router.isReady, title]);
 
-  function getCacheBook(): void {
+  async function getCacheBook(): Promise<void> {
     const b: Book | undefined = cacheBooks?.find((b: Book) =>
       isEqual(b?.data?.title, title)
     );
     if (!b) return;
     setBook(b);
-    setNotes(b?.data?.notes ?? "");
     setDocumentId(b?.id);
     setImgSrc(b?.data?.image || DEFAULT_COVER.src);
+
+    const rawNotes = b?.data?.notes ?? "";
+    if (rawNotes) {
+      try {
+        const userKey = user?.id ? await getOrCreateUserKey(user.id) : "";
+        const decrypted = await decryptDataV2(rawNotes, userKey, user?.id as string);
+        const decryptedStr =
+          typeof decrypted === "string"
+            ? decrypted
+            : decrypted
+            ? JSON.stringify(decrypted)
+            : "";
+        setNotes(decryptedStr);
+      } catch {
+        setNotes(rawNotes);
+      }
+    } else {
+      setNotes("");
+    }
+
     finishLoading();
   }
 
   async function updateNotes(): Promise<void> {
     try {
-      const dataWithUpdatedNotes: BookData = { ...book?.data, notes };
+      let notesToSave = notes;
+      if (user?.id && notes) {
+        const userKey = await getOrCreateUserKey(user.id);
+        notesToSave = encryptDataV2(notes, userKey);
+      }
+      const dataWithUpdatedNotes: BookData = { ...book?.data, notes: notesToSave };
       await BookAdapters.manageBook(book.id, dataWithUpdatedNotes, user.id as string);
-      const updatedNotes: Book = { ...book, data: { ...book?.data, notes } },
-        oldVersion: Book[] = (cacheBooks ?? []).filter(
-          (b: Book) => b?.id != documentId
-        ),
-        newVersion: Book[] = [...oldVersion, updatedNotes];
+
+      const updatedBook: Book = { ...book, data: { ...book?.data, notes: notesToSave } };
+      const oldVersion: Book[] = (cacheBooks ?? []).filter(
+        (b: Book) => b?.id != documentId
+      );
+      const newVersion: Book[] = [...oldVersion, updatedBook];
       setCacheBooks(newVersion);
-      setBook(updatedNotes);
+      setBook(updatedBook);
     } catch (err: any) {
       closePopUp("notes");
       router.push(`${PAGES.ERROR}?notes=${notes}`);
@@ -132,7 +162,6 @@ function BookId(): Component {
   async function toggleFav(): Promise<void> {
     try {
       setLoadingFav(true);
-      notification("loading", checkFav ? "Eliminando de favoritos..." : "Añadiendo a favoritos...");
       const dataWithUpdatedFav: BookData = { ...book?.data, isFav: !checkFav };
       await BookAdapters.manageBook(documentId, dataWithUpdatedFav, user.id as string);
       const oldVersion: Book[] = (cacheBooks ?? []).filter(
@@ -143,9 +172,17 @@ function BookId(): Component {
         { id: documentId, data: dataWithUpdatedFav },
       ];
       setCacheBooks(newVersion);
-      router.reload();
+      setBook({ id: documentId, data: dataWithUpdatedFav });
+      setLoadingFav(false);
+      dismissNoti();
+      notification(
+        "success",
+        !checkFav ? "Añadido a favoritos" : "Eliminado de favoritos"
+      );
     } catch (err: any) {
-      router.push(PAGES.ERROR);
+      setLoadingFav(false);
+      dismissNoti();
+      notification("error", "Error al actualizar favoritos");
       console.error(`catch 'toggleFav' ${err.message}`);
     }
   }
@@ -181,6 +218,7 @@ function BookId(): Component {
         <div className="flex-shrink-0">
           <div className="md:bg-violet-500/10 p-1.5 rounded-xl">
             <Cover
+              priority
               style={stylesImg}
               className="select-none w-[200px] h-[300px] aspect-[2/3] rounded-lg object-cover"
               src={imgSrc}
@@ -194,7 +232,7 @@ function BookId(): Component {
 
         <div className="flex flex-col justify-between w-full gap-y-6">
           <div className="space-y-8">
-            <p className="text-2xl sm:text-3xl font-semibold text-slate-200 line-clamp-2">
+            <p className="text-2xl sm:text-3xl font-semibold text-slate-200 break-words leading-tight">
               {book?.data?.title}
             </p>
 

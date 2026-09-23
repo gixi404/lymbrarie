@@ -3,10 +3,9 @@ import LogInBtn from "./btns/LogInBtn";
 import Select from "react-select";
 import useGuest from "@/hooks/useGuest";
 import useIsMobile from "@/hooks/useIsMobile";
-import { menuAtom, searchAtom, stateAtom } from "@/utils/atoms";
+import { searchAtom, stateAtom } from "@/utils/atoms";
 import { BOOK_STATES } from "@/utils/states";
 import { selectStyles } from "@/utils/helpers";
-import { twMerge } from "tailwind-merge";
 import { useRecoilState } from "recoil";
 import type {
   Component,
@@ -19,7 +18,6 @@ export default function SearchIndex(): Component {
   const { isGuest } = useGuest(),
     [value, setValue] = useRecoilState<string>(searchAtom),
     [selectVal, setSelectStateVal] = useRecoilState<string>(stateAtom),
-    [menuIsOpen] = useRecoilState<boolean>(menuAtom),
     { isMobile } = useIsMobile(),
     handleSearch: Handler<InputEvent, void> = (e: InputEvent) =>
       setValue(e.target.value),
@@ -38,12 +36,7 @@ export default function SearchIndex(): Component {
     };
 
   return (
-    <div
-      className={twMerge(
-        menuIsOpen ? "hidden" : "flex",
-        "w-full mb-0 sm:mb-10 flex-col items-center gap-y-8"
-      )}
-    >
+    <div className="w-full mb-0 sm:mb-10 flex flex-col items-center gap-y-8">
       <form className="w-full max-w-3xl flex flex-col items-center justify-center select-none px-3 sm:px-0">
         <div className="w-full flex flex-col sm:flex-row gap-4 justify-center items-center">
           <div className="join w-full sm:w-auto max-w-xl">

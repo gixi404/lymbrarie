@@ -7,7 +7,7 @@ import type { Component } from "@/utils/types";
 
 const Nav = memo(function Nav(): Component {
   return (
-    <nav className="absolute top-28 z-10 w-[200px] right-6 bg-slate-900 gap-y-3 p-4 rounded-xl flex-col items-start justify-center border border-violet-500/20 flex md:hidden">
+    <nav className="absolute top-20 z-50 w-[200px] right-6 bg-slate-900/95 backdrop-blur-md gap-y-3 p-4 rounded-xl flex-col items-start justify-center border border-violet-500/20 flex md:hidden shadow-2xl">
       <Link
         className={
           pathIs(PAGES.HOME, { exact: true })

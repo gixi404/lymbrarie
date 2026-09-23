@@ -46,8 +46,10 @@ function handleShare(title: string): void {
   contentClone.appendChild(watermark);
   document.body.appendChild(contentClone);
 
+  console.time("[profiling] ShareBtn html2canvas capture");
   html2canvas(contentClone, { backgroundColor: "rgb(2,6,23)" }).then(
     (canvas: HTMLCanvasElement) => {
+      console.timeEnd("[profiling] ShareBtn html2canvas capture");
       document.body.removeChild(contentClone);
       link.href = canvas.toDataURL("image/png");
       link.download = `${title}.png`;

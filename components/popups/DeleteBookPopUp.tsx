@@ -85,38 +85,33 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
         <p className="py-4 text-lg sm:text-xl text-violet-100">
           ¿Deseas borrar este libro?
         </p>
-        <div className="modal-action">
-          <form method="dialog" className="space-x-2">
-            <button
-              disabled={isLoading}
-              type="button"
-              onClick={() => closePopUp("delete_book")}
-              className="px-4 py-2 rounded-xl bg-slate-900/60 
-            border border-violet-500/15 
-            hover:bg-slate-900/80 hover:border-violet-500/30 
-            transition-colors disabled:opacity-50 
-            text-slate-300 text-lg"
-            >
-              Cancelar
-            </button>
+        <div className="mt-6 flex flex-row flex-nowrap items-center justify-end gap-x-2 sm:gap-x-3 w-full">
+          <button
+            disabled={isLoading}
+            type="button"
+            onClick={() => closePopUp("delete_book")}
+            className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-slate-800/80 border border-violet-500/20 hover:bg-slate-700/80 text-slate-200 text-sm sm:text-base font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
+          >
+            Cancelar
+          </button>
 
-            {isLoading ? (
-              <button
-                disabled
-                className="btn font-thin cursor-default text-white text-sm sm:text-lg w-26"
-              >
-                Eliminando
-              </button>
-            ) : (
-              <button
-                onClick={deleteDocument}
-                type="button"
-                className="btn font-thin bg-red-800/90 hover:bg-red-700 text-white text-sm sm:text-lg w-26"
-              >
-                Eliminar libro
-              </button>
-            )}
-          </form>
+          {isLoading ? (
+            <button
+              disabled
+              type="button"
+              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-red-900/50 border border-red-500/30 text-slate-300 text-sm sm:text-base font-medium transition-colors opacity-70 cursor-default whitespace-nowrap"
+            >
+              Eliminando...
+            </button>
+          ) : (
+            <button
+              onClick={deleteDocument}
+              type="button"
+              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-red-700/90 hover:bg-red-600 border border-red-500/30 text-white text-sm sm:text-base font-medium transition-colors whitespace-nowrap"
+            >
+              Eliminar libro
+            </button>
+          )}
         </div>
       </animated.div>
     </dialog>

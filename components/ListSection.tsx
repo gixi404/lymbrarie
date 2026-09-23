@@ -65,7 +65,9 @@ const ListSection = memo(function B(props: Props) {
 
   useEffect(() => {
     if (pathIs(PAGES.HOME, { exact: true })) {
-      scrollTo({ top: scrollLS ?? scroll, behavior: "instant" });
+      requestAnimationFrame(() => {
+        scrollTo({ top: scrollLS ?? scroll, behavior: "instant" });
+      });
 
       if (!isNull(scrollLS)) {
         (async () => {

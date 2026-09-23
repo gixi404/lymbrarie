@@ -91,7 +91,7 @@ function NewBookPopUp({ UID }: Props): Component {
             border border-violet-500/15 
             hover:bg-slate-900/80 hover:border-violet-500/30 
             transition-colors disabled:opacity-50 
-            text-slate-400 hover:text-slate-300 text-lg"
+            text-slate-400 hover:text-slate-300 text-sm sm:text-base font-medium"
           >
             Cancelar
           </button>
@@ -99,11 +99,11 @@ function NewBookPopUp({ UID }: Props): Component {
           <button
             disabled={isLoading || coverLoading}
             type="submit"
-            className="px-8 py-2 rounded-xl
+            className="px-6 sm:px-8 py-2 rounded-xl
             bg-violet-500/50 border border-violet-500/20
             hover:bg-violet-500/60 hover:border-violet-500/30
             transition-colors disabled:opacity-50
-            text-violet-50 text-lg font-medium"
+            text-violet-50 text-sm sm:text-base font-medium"
           >
             Añadir
           </button>

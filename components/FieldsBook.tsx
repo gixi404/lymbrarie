@@ -42,12 +42,12 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
       <label
         htmlFor="title-input"
         className={twMerge(
-          "flex items-center w-full bg-slate-900/40 backdrop-blur-sm rounded-xl px-4 h-14",
+          "flex items-center w-full bg-slate-900/40 backdrop-blur-sm rounded-xl px-3.5 sm:px-4 h-12 sm:h-14",
           "border border-violet-500/20 hover:border-violet-500/30 transition-colors",
           isEqual("title-input", errorKey) && "!border-red-500/50 !border-2"
         )}
       >
-        <ItalicIcon size={18} className="text-violet-300 mr-3" />
+        <ItalicIcon size={18} className="text-violet-300 mr-3 flex-shrink-0" />
         <input
           id="title-input"
           autoFocus
@@ -56,7 +56,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
           defaultValue={defaultValueTitle}
           name="title"
           type="text"
-          className="w-full bg-slate-900/40 text-slate-200 text-lg placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
+          className="w-full bg-transparent text-slate-200 text-sm sm:text-base md:text-lg placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
           placeholder="Título"
         />
       </label>
@@ -64,12 +64,12 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
       <label
         htmlFor="author-input"
         className={twMerge(
-          "flex items-center w-full bg-slate-900/40 backdrop-blur-sm rounded-xl px-4 h-14",
+          "flex items-center w-full bg-slate-900/40 backdrop-blur-sm rounded-xl px-3.5 sm:px-4 h-12 sm:h-14",
           "border border-violet-500/20 hover:border-violet-500/30 transition-colors",
           isEqual("author-input", errorKey) && "!border-red-500/50 !border-2"
         )}
       >
-        <UserIcon size={18} className="text-violet-300 mr-3" />
+        <UserIcon size={18} className="text-violet-300 mr-3 flex-shrink-0" />
         <input
           id="author-input"
           disabled={isLoading}
@@ -77,8 +77,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
           defaultValue={defaultValueAuthor}
           name="author"
           type="text"
-          className="w-full bg-slate-900/40 text-slate-200 text-lg placeholder:text-slate-400
-              focus:outline-none disabled:opacity-50"
+          className="w-full bg-transparent text-slate-200 text-sm sm:text-base md:text-lg placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
           placeholder="Autor"
         />
       </label>
@@ -87,7 +86,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
         <label
           htmlFor="gender-select"
           className={twMerge(
-            "flex items-center flex-1 bg-slate-900/40 backdrop-blur-sm rounded-xl px-4 h-14",
+            "flex items-center flex-1 bg-slate-900/40 backdrop-blur-sm rounded-xl px-3.5 sm:px-4 h-12 sm:h-14 relative",
             "border border-violet-500/20 hover:border-violet-500/30 transition-colors"
           )}
         >
@@ -106,7 +105,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
                 ? "default"
                 : "custom"
             }
-            className="pl-7 w-full bg-slate-900 text-slate-300 text-lg focus:outline-none disabled:opacity-50 appearance-none cursor-pointer h-full"
+            className="pl-7 w-full bg-slate-900 text-slate-300 text-sm sm:text-base md:text-lg focus:outline-none disabled:opacity-50 appearance-none cursor-pointer h-full"
           >
             <option value="default" disabled>
               Género literario
@@ -119,7 +118,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
           </select>
           <ChevronDownIcon
             size={20}
-            className="text-violet-400/70 pointer-events-none absolute right-6"
+            className="text-violet-400/70 pointer-events-none absolute right-4 sm:right-6"
           />
         </label>
 
@@ -127,13 +126,13 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
           <label
             htmlFor="gender-input"
             className={twMerge(
-              "flex items-center flex-1 bg-slate-900/40 backdrop-blur-sm rounded-xl px-4 h-14",
+              "flex items-center flex-1 bg-slate-900/40 backdrop-blur-sm rounded-xl px-3.5 sm:px-4 h-12 sm:h-14",
               "border border-violet-500/20 hover:border-violet-500/30 transition-colors",
               isEqual("gender-input", errorKey) &&
                 "!border-red-500/50 !border-2"
             )}
           >
-            <TypeIcon size={18} className="text-violet-300 mr-3" />
+            <TypeIcon size={18} className="text-violet-300 mr-3 flex-shrink-0" />
             <input
               id="gender-input"
               onChange={(e: InputEvent) => {
@@ -143,8 +142,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
               name="gender"
               disabled={isLoading}
               type="text"
-              className="w-full bg-slate-900/40 text-slate-200 text-lg placeholder:text-slate-400
-                  focus:outline-none disabled:opacity-50"
+              className="w-full bg-transparent text-slate-200 text-sm sm:text-base md:text-lg placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
               placeholder="Personalizado"
               defaultValue={applyGender ? "Mi género" : defaultValueGender}
             />
@@ -156,7 +154,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
         <label
           htmlFor="state-select"
           className={twMerge(
-            "flex items-center bg-slate-900/40 backdrop-blur-sm rounded-xl px-4 h-14",
+            "flex items-center bg-slate-900/40 backdrop-blur-sm rounded-xl px-3.5 sm:px-4 h-12 sm:h-14",
             "border border-violet-500/20 hover:border-violet-500/30 transition-colors relative",
             isLent ? "w-1/2" : "w-full"
           )}
@@ -170,7 +168,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
             disabled={isLoading}
             onChange={e => handleState(e.target.value)}
             defaultValue={defaultValueState}
-            className="pl-7 w-full bg-slate-900 text-slate-300 text-lg focus:outline-none disabled:opacity-50 appearance-none cursor-pointer h-full"
+            className="pl-7 w-full bg-slate-900 text-slate-300 text-sm sm:text-base md:text-lg focus:outline-none disabled:opacity-50 appearance-none cursor-pointer h-full"
           >
             <option value="default" disabled>
               Estado actual
@@ -183,7 +181,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
           </select>
           <ChevronDownIcon
             size={20}
-            className="text-violet-400/70 pointer-events-none absolute right-6"
+            className="text-violet-400/70 pointer-events-none absolute right-4 sm:right-6"
           />
         </label>
 
@@ -191,12 +189,12 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
           <label
             htmlFor="lent-input"
             className={twMerge(
-              "flex items-center w-1/2 bg-slate-900/40 backdrop-blur-sm rounded-xl px-4 h-14",
+              "flex items-center w-1/2 bg-slate-900/40 backdrop-blur-sm rounded-xl px-3.5 sm:px-4 h-12 sm:h-14",
               "border border-violet-500/20 hover:border-violet-500/30 transition-colors",
               isEqual("lent-input", errorKey) && "!border-red-500/50 !border-2"
             )}
           >
-            <UserRoundSearchIcon size={18} className="text-violet-300 mr-3" />
+            <UserRoundSearchIcon size={18} className="text-violet-300 mr-3 flex-shrink-0" />
             <input
               id="lent-input"
               disabled={isLoading}
@@ -204,8 +202,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
               name="loaned"
               defaultValue={defaultValueLoaned}
               type="text"
-              className="w-full bg-slate-900/40 text-slate-200 text-lg placeholder:text-slate-400
-                  focus:outline-none disabled:opacity-50"
+              className="w-full bg-transparent text-slate-200 text-sm sm:text-base md:text-lg placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
               placeholder="Prestado a"
             />
           </label>

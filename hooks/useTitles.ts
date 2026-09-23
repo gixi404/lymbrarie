@@ -6,8 +6,10 @@ import type { Book } from "@/utils/types";
 function useTitles(title?: string): Titles {
   const [allTitles, setAllTitles] = useLocalStorage<string[]>("all-titles", []);
 
-  const isRepeated: boolean = allTitles.some((itemTitle: string) => {
-    if (!title) return false;
+  const titlesArray = Array.isArray(allTitles) ? allTitles : [];
+
+  const isRepeated: boolean = titlesArray.some((itemTitle: string) => {
+    if (!title || typeof itemTitle !== "string") return false;
     return isEqual(deburr(tLC(itemTitle)), deburr(tLC(title)));
   });
 
@@ -16,7 +18,7 @@ function useTitles(title?: string): Titles {
     setAllTitles(arr.map((b: Book) => b?.data?.title).filter((t): t is string => !!t));
   }
 
-  return { isRepeated, allTitles, updateTitles };
+  return { isRepeated, allTitles: titlesArray, updateTitles };
 }
 
 export default useTitles;

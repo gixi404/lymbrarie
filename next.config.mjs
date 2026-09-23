@@ -2,7 +2,6 @@
 const nextConfig = {
   reactStrictMode: true,
   env: {
-    DECRYPT: process.env.DECRYPT,
     FIREBASE_API_KEY: process.env.FIREBASE_API_KEY,
     API_KEY_BOOKS: process.env.API_KEY_BOOKS,
   },

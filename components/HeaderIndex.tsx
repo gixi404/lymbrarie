@@ -27,12 +27,7 @@ export default function HeaderIndex(): Component {
     <>
       <animated.header
         style={styles}
-        className={twMerge(
-          menuIsOpen && pathIs(PAGES.HOME, { exact: true })
-            ? "mb-28"
-            : "mb-10 md:mb-20",
-          "navbar max-w-[1000px] bg-slate-900/80 backdrop-blur-sm md:rounded-2xl px-6 border-b md:border border-violet-500/20 justify-between"
-        )}
+        className="navbar max-w-[1000px] mb-8 md:mb-20 bg-slate-900/80 backdrop-blur-sm md:rounded-2xl px-6 border-b md:border border-violet-500/20 justify-between relative"
       >
         <Link
           href={isGuest ? PAGES.GUEST : PAGES.HOME}
