@@ -13,7 +13,7 @@ import type { Component } from "@/utils/types";
 const preset: string = String(process.env.NEXT_PUBLIC_PRESET);
 
 export default function InputCover(props: Props): Component {
-  const { isLoading, handleImage, isEditing } = props,
+  const { isLoading, handleImage, isEditing, defaultValueImg } = props,
     [coverLoading, setCoverLoading] = useRecoilState(coverAtom),
     loading: boolean = isLoading || coverLoading,
     containerRef = useRef<HTMLDivElement>(null),
@@ -21,33 +21,51 @@ export default function InputCover(props: Props): Component {
     [isDragging, setIsDragging] = useState<boolean>(false),
     [popupTarget, setPopupTarget] = useState<HTMLElement | null>(null),
     [errImg, setErrImg] = useState<boolean>(false),
-    [previewUrl, setPreviewUrl] = useState<string | null>(null);
+    userSelectedRef = useRef<boolean>(false),
+    [previewUrl, setPreviewUrl] = useState<string | null>(defaultValueImg || null);
+
+  useEffect(() => {
+    if (!userSelectedRef.current) {
+      setPreviewUrl(defaultValueImg || null);
+    }
+  }, [defaultValueImg]);
 
   const saveImgFile = useCallback(
     async (file: File): Promise<void> => {
       setErrImg(false);
       setCoverLoading(true);
+      userSelectedRef.current = true;
 
       const objectUrl = URL.createObjectURL(file);
       setPreviewUrl(objectUrl);
 
-      const body: FormData = new FormData();
-
       try {
-        body.append("file", file);
+        const base64 = await fileToBase64(file);
+        handleImage(base64);
+
+        const extension = file.name.split('.').pop() || 'png';
+        const uniqueName = `cover_${Date.now()}_${Math.random().toString(36).substring(2, 7)}.${extension}`;
+        const renamedFile = new File([file], uniqueName, { type: file.type });
+
+        const body: FormData = new FormData();
+        body.append("file", renamedFile);
         body.append("upload_preset", preset);
 
         const res: Response = await fetch(CLOUDINARY_URL, {
-            method: "POST",
-            body,
-          }),
-          data: { secure_url: string } = await res.json(),
-          url: string = data.secure_url;
+          method: "POST",
+          body,
+        });
 
-        handleImage(url);
+        if (res.ok) {
+          const data: { secure_url?: string } = await res.json();
+          if (data.secure_url) {
+            const rawUrl: string = data.secure_url;
+            const separator: string = rawUrl.includes("?") ? "&" : "?";
+            const url: string = `${rawUrl}${separator}t=${Date.now()}`;
+            handleImage(url);
+          }
+        }
       } catch (err: any) {
-        setErrImg(true);
-        notification("error", "Error cargando portada, reinténtalo");
         console.error(`catch 'saveImgFile' ${err.message}`);
       } finally {
         setCoverLoading(false);
@@ -145,13 +163,34 @@ export default function InputCover(props: Props): Component {
       const items = clipboardEvt.clipboardData?.items;
       if (!items) return;
 
-      const imageItem = Array.from(items).find((item) => item.type.startsWith("image/"));
-      if (!imageItem) return;
+      const itemsArr = Array.from(items);
+      const imageItem = itemsArr.find((item) => item.type.startsWith("image/"));
+      if (imageItem) {
+        e.preventDefault();
+        const file = imageItem.getAsFile();
+        if (file) {
+          userSelectedRef.current = true;
+          await saveImgFile(file);
+        }
+        return;
+      }
 
-      e.preventDefault();
-      const file = imageItem.getAsFile();
-      if (file) {
-        await saveImgFile(file);
+      const textItem = itemsArr.find((item) => item.type === "text/plain");
+      if (textItem) {
+        textItem.getAsString((text) => {
+          const trimmed = text.trim();
+          if (
+            trimmed.startsWith("http://") ||
+            trimmed.startsWith("https://") ||
+            trimmed.startsWith("data:image/")
+          ) {
+            e.preventDefault();
+            setErrImg(false);
+            userSelectedRef.current = true;
+            setPreviewUrl(trimmed);
+            handleImage(trimmed);
+          }
+        });
       }
     }
 
@@ -205,18 +244,14 @@ export default function InputCover(props: Props): Component {
 
         {errImg ? (
           <p className="text-red-300 text-lg">Error cargando portada, reinténtalo</p>
+        ) : coverLoading ? (
+          <p className="text-sm sm:text-lg text-slate-300 select-none">
+            Generando portada...
+          </p>
         ) : (
           <p className="text-sm sm:text-lg text-slate-300 select-none">
-            {previewUrl && !coverLoading ? (
-              "¡Portada lista!"
-            ) : coverLoading ? (
-              "Generando portada..."
-            ) : (
-              <>
-                {isEditing ? "Cambiar portada" : "Agregar portada"}
-                <span className="hidden sm:inline"> (clic, arrastrar o Ctrl+V)</span>
-              </>
-            )}
+            {isEditing || previewUrl ? "Cambiar portada" : "Agregar portada"}
+            <span className="hidden sm:inline"> (clic, arrastrar o Ctrl+V)</span>
           </p>
         )}
 
@@ -256,5 +291,15 @@ interface Props {
   isLoading: boolean | undefined;
   handleImage: (newUrl: string) => void;
   isEditing: boolean;
+  defaultValueImg?: string;
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => resolve(reader.result as string);
+    reader.onerror = (err) => reject(err);
+    reader.readAsDataURL(file);
+  });
 }
 

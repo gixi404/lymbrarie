@@ -5,6 +5,8 @@ export const MAX_FIELD_LENGTH = 24;
 export const ERROR_DELAY_MS = 2300;
 
 export function validateImageUrl(url: string): boolean {
+  if (!url) return true;
+  if (url.startsWith("data:image/") || url.startsWith("blob:")) return true;
   return URL_REGEX.test(url);
 }
 

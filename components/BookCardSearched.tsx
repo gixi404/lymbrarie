@@ -2,7 +2,7 @@ import { memo } from "react";
 import AddBookToLibraryBtn from "./btns/AddBookToLibraryBtn";
 import Cover from "@/public/cover.webp";
 import Image from "next/image";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { BookData, Component } from "@/utils/types";
 
 const BookCardSearched = memo(function BookCardSearched(props: Card): Component {
@@ -15,6 +15,10 @@ const BookCardSearched = memo(function BookCardSearched(props: Card): Component 
       author: author.slice(0, 34),
       gender: gender.slice(0, 24),
     };
+
+  useEffect(() => {
+    setImgSrc(image || Cover.src);
+  }, [image]);
 
   return (
     <li

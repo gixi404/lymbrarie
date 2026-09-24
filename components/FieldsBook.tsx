@@ -33,6 +33,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
       defaultValueGender = "",
       defaultValueState = "default",
       defaultValueLoaned = "",
+      defaultValueImg = "",
       isEditing,
     } = props,
     applyGender: boolean = GENDERS.includes(tLC(defaultValueGender));
@@ -213,6 +214,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
         isEditing={isEditing}
         isLoading={isLoading}
         handleImage={handleImage}
+        defaultValueImg={defaultValueImg}
       />
     </>
   );

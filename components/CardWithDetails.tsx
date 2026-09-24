@@ -3,7 +3,7 @@ import Cover from "@/public/cover.webp";
 import Image from "next/image";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { translateGender } from "@/utils/helpers";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import type { Component } from "@/utils/types";
 import { Tag as GenderIcon, User as UserIcon } from "lucide-react";
 
@@ -12,6 +12,10 @@ const CardWithDetails = memo(function CardWithDetails(props: Card): Component {
     { title, formatState, img, gender, author, onClick } = props,
     [imgSrc, setImgSrc] = useState<string>(img || Cover.src),
     translatedGender = translateGender(gender || "");
+
+  useEffect(() => {
+    setImgSrc(img || Cover.src);
+  }, [img]);
 
   return (
     <li

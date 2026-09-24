@@ -1,13 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+
+const EVENT_NAME = "lymbrarie-local-storage";
 
 function useLocalStorage<T>(key: string, initialValue: T) {
   const [storedValue, setStoredValue] = useState<T>(() => {
     try {
+      if (typeof window === "undefined") return initialValue;
       const item = window.localStorage.getItem(key);
       if (!item) return initialValue;
       try {
         const parsed = JSON.parse(item);
-        // Type validation against initialValue to prevent legacy encrypted strings from poisoning non-string states
         if (Array.isArray(initialValue) && !Array.isArray(parsed)) {
           return initialValue;
         }
@@ -24,7 +26,6 @@ function useLocalStorage<T>(key: string, initialValue: T) {
         }
         return parsed as T;
       } catch {
-        // Fallback for unparseable legacy raw strings: only use item if initialValue is a string and not encrypted ciphertext
         return typeof initialValue === "string" && !item.startsWith("U2FsdGVk")
           ? (item as unknown as T)
           : initialValue;
@@ -39,11 +40,48 @@ function useLocalStorage<T>(key: string, initialValue: T) {
       const valueToStore =
         value instanceof Function ? value(storedValue) : value;
       setStoredValue(valueToStore);
-      window.localStorage.setItem(key, JSON.stringify(valueToStore));
+      if (typeof window !== "undefined") {
+        window.localStorage.setItem(key, JSON.stringify(valueToStore));
+        window.dispatchEvent(
+          new CustomEvent(EVENT_NAME, {
+            detail: { key, value: valueToStore },
+          })
+        );
+      }
     } catch {
       // Silently fail on localStorage write errors
     }
   };
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    function handleCustomEvent(e: Event) {
+      const customEvt = e as CustomEvent<{ key: string; value: T }>;
+      if (customEvt.detail?.key === key) {
+        setStoredValue(customEvt.detail.value);
+      }
+    }
+
+    function handleStorageEvent(e: StorageEvent) {
+      if (e.key === key && e.newValue !== null) {
+        try {
+          setStoredValue(JSON.parse(e.newValue));
+        } catch {
+          setStoredValue(e.newValue as unknown as T);
+        }
+      }
+    }
+
+    window.addEventListener(EVENT_NAME, handleCustomEvent);
+    window.addEventListener("storage", handleStorageEvent);
+
+    return () => {
+      window.removeEventListener(EVENT_NAME, handleCustomEvent);
+      window.removeEventListener("storage", handleStorageEvent);
+    };
+  }, [key]);
+
   return [storedValue, setValue] as const;
 }
 

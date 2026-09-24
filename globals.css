@@ -5,3 +5,26 @@
 html {
   @apply font-pop selection:bg-violet-900 selection:text-white scroll-smooth;
 }
+
+/* Remove TinyMCE focus white border/outline/box-shadow */
+.tox-tinymce,
+.tox-tinymce:focus,
+.tox-tinymce--focused,
+.tox-edit-area,
+.tox-edit-area:focus,
+.tox-edit-area__iframe,
+.tox-editor-container,
+.tox {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.tox .tox-edit-area__iframe {
+  outline: none !important;
+}
+
+.tox .tox-tinymce--focused {
+  border: none !important;
+  box-shadow: none !important;
+}

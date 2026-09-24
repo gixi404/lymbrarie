@@ -8,8 +8,8 @@ import { deburr, isEqual } from "es-toolkit";
 import { dismissNoti, notification } from "@/utils/notifications";
 import { GENDERS, PAGES } from "@/utils/consts";
 import { tLC, isLent } from "@/utils/helpers";
-import { scrollAtom } from "@/utils/atoms";
-import { useRecoilState } from "recoil";
+import { scrollAtom, coverAtom } from "@/utils/atoms";
+import { useRecoilState, useRecoilValue } from "recoil";
 import type { Book, BookData, Component } from "@/utils/types";
 import { type NextRouter, useRouter } from "next/router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
@@ -26,6 +26,7 @@ function EditBookPopUp(props: Props): Component {
     [allTitles, setAllTitles] = useLocalStorage<string[]>("all-titles", []),
     [, setScrollLS] = useLocalStorage("scroll-editpopup", 0),
     [scroll] = useRecoilState(scrollAtom),
+    coverLoading = useRecoilValue(coverAtom),
     [editDisabled, setEditDisabled] = useState<boolean>(true),
     {
       book, setBook,
@@ -38,7 +39,7 @@ function EditBookPopUp(props: Props): Component {
       validateFields,
     } = useBookForm();
 
-  useEffect(() => loadBookData(), [data]);
+  useEffect(() => loadBookData(), [dataBook?.id]);
 
   useEffect(() => {
     const noChanges: boolean =
@@ -154,7 +155,7 @@ function EditBookPopUp(props: Props): Component {
           Cancelar
         </button>
         <button
-          disabled={editDisabled || isLoading}
+          disabled={editDisabled || isLoading || coverLoading}
           type="submit"
           className="px-6 sm:px-8 py-2 rounded-xl
             bg-violet-500/20 border border-violet-500/20

@@ -73,6 +73,12 @@ function Index(): Component {
   useEffect(() => animateList(), [myBooks]);
 
   useEffect(() => {
+    if (Array.isArray(cacheBooks)) {
+      setMyBooks(cacheBooks);
+    }
+  }, [cacheBooks]);
+
+  useEffect(() => {
     fetchBooks();
   }, [user]);
 

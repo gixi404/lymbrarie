@@ -36,7 +36,19 @@ export function useBookForm(): UseBookFormReturn {
   }
 
   function handleImage(image: string): void {
-    setBook((prev) => ({ ...prev, image }));
+    if (!image) {
+      setBook((prev) => ({ ...prev, image: "" }));
+      return;
+    }
+    const isDataOrBlob = image.startsWith("data:") || image.startsWith("blob:");
+    if (isDataOrBlob) {
+      setBook((prev) => ({ ...prev, image }));
+      return;
+    }
+    const hasCacheBuster = image.includes("t=");
+    const separator = image.includes("?") ? "&" : "?";
+    const finalImage = hasCacheBuster ? image : `${image}${separator}t=${Date.now()}`;
+    setBook((prev) => ({ ...prev, image: finalImage }));
   }
 
   function handleGender(e: SelectEvent): void {

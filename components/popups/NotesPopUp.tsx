@@ -91,7 +91,7 @@ function NotesPopUp(props: Props): Component {
             <span className="loading loading-spinner loading-lg text-violet-500" />
           </div>
         )}
-        <div className="flex-1 w-full overflow-hidden flex flex-col [&_iframe]:!border-0 [&_iframe]:!outline-0 [&_.tox-tinymce]:!border-0 [&_.tox-editor-container]:!border-0">
+        <div className="flex-1 w-full overflow-hidden flex flex-col [&_iframe]:!border-0 [&_iframe]:!outline-none [&_.tox-tinymce]:!border-0 [&_.tox-tinymce]:!outline-none [&_.tox-tinymce]:!box-shadow-none [&_.tox-tinymce--focused]:!border-0 [&_.tox-tinymce--focused]:!outline-none [&_.tox-tinymce--focused]:!box-shadow-none [&_.tox-editor-container]:!border-0 [&_.tox-edit-area]:!border-0 [&_.tox-edit-area__iframe]:!border-0">
           <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             licenseKey="gpl"
@@ -108,7 +108,7 @@ function NotesPopUp(props: Props): Component {
               content_css: "dark",
               skin: "oxide-dark",
               content_style:
-                "body { background-color: #1e293b; color: #e2e8f0; font-family: Poppins, sans-serif; font-size: 16px; padding: 16px; border: 0; outline: 0; } * { outline: 0 !important; }",
+                "body { background-color: #1e293b; color: #e2e8f0; font-family: Poppins, sans-serif; font-size: 16px; padding: 16px; border: 0 !important; outline: 0 !important; box-shadow: none !important; } * { outline: 0 !important; border: 0 !important; box-shadow: none !important; }",
               placeholder: "...",
               height: "100%",
               menubar: false,

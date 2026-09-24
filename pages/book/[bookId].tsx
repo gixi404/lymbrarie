@@ -75,8 +75,16 @@ function BookId(): Component {
       .map((b: Book) => b?.data)
       .filter((b): b is BookData => !!b?.isFav),
     checkFav: boolean = myFavs.some((b: BookData) => isEqual(b?.title, title)),
-    inCache: boolean = (cacheBooks ?? []).some((b: Book) => isEqual(b?.data?.title, title)),
-    notExist: boolean = !allTitles.includes(title) && !inCache && title.length > 0,
+    inCache: boolean = (cacheBooks ?? []).some(
+      (b: Book) =>
+        isEqual(b?.data?.title, title) || (Boolean(documentId) && b?.id === documentId)
+    ),
+    notExist: boolean =
+      Boolean(cacheBooks) &&
+      (cacheBooks ?? []).length > 0 &&
+      !allTitles.includes(title) &&
+      !inCache &&
+      title.length > 0,
     notesProps = { updateNotes, notes, setNotes, isLoading, loadingFav, title },
     [popup] = useRecoilState(popupsAtom),
     handleRouteChange: Handler<void, void> = () => closeBookPopUps(),
@@ -95,7 +103,7 @@ function BookId(): Component {
     if (!navigator.onLine) return;
     const unsub: Unsubscribe = onAuthStateChanged(auth, () => noop());
     return () => unsub();
-  }, [bookTitle, auth, user?.id]);
+  }, [bookTitle, auth, user?.id, cacheBooks]);
 
   useEffect(() => {
     if (!router.isReady || !title) return;
@@ -103,8 +111,9 @@ function BookId(): Component {
   }, [notExist, router.isReady, title]);
 
   async function getCacheBook(): Promise<void> {
-    const b: Book | undefined = cacheBooks?.find((b: Book) =>
-      isEqual(b?.data?.title, title)
+    const b: Book | undefined = cacheBooks?.find(
+      (b: Book) =>
+        isEqual(b?.data?.title, title) || (Boolean(documentId) && b?.id === documentId)
     );
     if (!b) return;
     setBook(b);

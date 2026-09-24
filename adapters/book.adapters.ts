@@ -1,6 +1,5 @@
 import { COLLECTION_BOOKS, PAGES } from "@/utils/consts";
-import { isEqual, isNull } from "es-toolkit";
-import { len } from "@/utils/helpers";
+import { isNull } from "es-toolkit";
 import { type Unsubscribe } from "firebase/auth";
 import type { ArgsSync, Book, BookData, Doc } from "@/utils/types";
 import {
@@ -43,21 +42,13 @@ export class BookAdapters {
       );
       const unsub: Unsubscribe = onSnapshot(myQuery, (qs: QuerySnapshot) => {
         const remoteBooks: Book[] = qs.docs.map((d: Doc) => ({
-            id: d?.id,
-            data: d?.data(),
-          })),
-          localBooks: Book[] = props.cacheBooks ?? [],
-          hasChanges: boolean =
-            len(localBooks) != len(remoteBooks) ||
-            remoteBooks?.some(
-              (doc, i) => !isEqual(doc.data, localBooks[i]?.data)
-            );
+          id: d?.id,
+          data: d?.data(),
+        }));
 
-        if (hasChanges) {
-          props.setCacheBooks(remoteBooks);
-          props.setMyBooks(remoteBooks);
-          props.setAllTitles(remoteBooks.map(b => b?.data?.title ?? ""));
-        } else return;
+        props.setCacheBooks(remoteBooks);
+        props.setMyBooks(remoteBooks);
+        props.setAllTitles(remoteBooks.map(b => b?.data?.title ?? ""));
       });
 
       return unsub;
