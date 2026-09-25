@@ -12,6 +12,14 @@ service cloud.firestore {
     match /lymbrarie_users/{userId} {
       allow read, write: if isAuthenticated() && request.auth.uid == userId;
     }
+
+    match /lymbrarie_suggestions/{suggestionId} {
+      allow read: if true;
+      allow create: if request.resource.data.text is string 
+                   && request.resource.data.text.size() > 0 
+                   && request.resource.data.text.size() <= 500;
+      allow update, delete: if false;
+    }
   }
 
   function isAuthenticated() {

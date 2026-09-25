@@ -101,14 +101,15 @@ function EditBookPopUp(props: Props): Component {
       setAllTitles(newTitles);
       setScrollLS(scroll);
       closePopUp("edit_book");
+      dismissNoti();
+      notification("success", "Libro editado correctamente");
       if (router.pathname.includes(PAGES.BOOK) && formatBookId !== book.title) {
         await router.push(newPath);
       }
     } catch (err: any) {
+      dismissNoti();
       router.push(PAGES.ERROR);
       console.error(`catch 'editBook' ${err.message}`);
-    } finally {
-      dismissNoti();
     }
   }
 

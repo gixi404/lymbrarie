@@ -39,6 +39,7 @@
     "next": "^14.2.7",
     "next-firebase-auth": "^1.1.0",
     "next-sitemap": "^4.2.3",
+    "nodemailer": "^10.0.10",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.2.3",
@@ -52,6 +53,7 @@
   "devDependencies": {
     "@firebase/rules-unit-testing": "^5.0.2",
     "@types/node": "^20.16.4",
+    "@types/nodemailer": "^8.0.2",
     "@types/react": "^18.3.5",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.20",

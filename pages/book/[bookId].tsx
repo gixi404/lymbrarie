@@ -9,7 +9,6 @@ import NotesPopUp from "@/components/popups/NotesPopUp";
 import OfflinePopUp from "@/components/popups/OfflinePopUp";
 import SettingsBtn from "@/components/btns/SettingsBtn";
 import ShareBtn from "@/components/btns/ShareBtn";
-import toast from "react-hot-toast";
 import useLoad from "@/hooks/useLoad";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import usePopUp from "@/hooks/usePopUp";
@@ -98,7 +97,6 @@ function BookId(): Component {
   }, []);
 
   useEffect(() => {
-    toast.remove();
     getCacheBook();
     if (!navigator.onLine) return;
     const unsub: Unsubscribe = onAuthStateChanged(auth, () => noop());

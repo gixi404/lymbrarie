@@ -22,7 +22,6 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
     setZeroBooks = useSetRecoilState<boolean>(zeroAtom),
     [cacheBooks, setCacheBooks] = useLocalStorage<Book[] | null>("cache-books", null),
     { isLoading, startLoading, finishLoading } = useLoad(),
-    [, setShowNoti] = useLocalStorage("deleted", false),
     [styles] = useSpring(() => animatePopup());
 
   async function deleteDocument(): Promise<void> {
@@ -34,11 +33,12 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
       setSearchVal("");
       setZeroBooks(isEqual(len(cacheBooks), 1));
       updateData();
+      dismissNoti();
+      notification("success", "Libro eliminado correctamente");
     } catch (err: any) {
+      dismissNoti();
       push(PAGES.ERROR);
       console.error(`catch 'deleteDocument' ${err.message}`);
-    } finally {
-      dismissNoti();
     }
   }
 
@@ -58,7 +58,6 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
   }
 
   function redirectToHome(): void {
-    setShowNoti(true);
     closePopUp("delete_book");
     finishLoading();
     push("/");

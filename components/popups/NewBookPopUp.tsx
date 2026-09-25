@@ -19,7 +19,6 @@ function NewBookPopUp({ UID }: Props): Component {
     router: NextRouter = useRouter(),
     formRef = useRef<HTMLFormElement>(null),
     [cacheBooks, setCacheBooks] = useLocalStorage<Book[] | null>("cache-books", null),
-    [, setShowNoti] = useLocalStorage("added", false),
     [coverLoading] = useRecoilState(coverAtom),
     {
       book,
@@ -48,13 +47,15 @@ function NewBookPopUp({ UID }: Props): Component {
       await BookAdapters.manageBook(id, data, UID);
       const newVersion: Book[] = [...(cacheBooks ?? []), { id, data }];
       setCacheBooks(newVersion);
-      setShowNoti(true);
       closePopUp("add_book");
+      dismissNoti();
+      notification("success", "Libro añadido correctamente");
+      const titlePage: string = encodeURIComponent(book.title ?? "");
+      await router.push(`${PAGES.BOOK}/${titlePage}`);
     } catch (err: any) {
+      dismissNoti();
       router.push(PAGES.ERROR);
       console.error(`catch 'newBook' ${err.message}`);
-    } finally {
-      dismissNoti();
     }
   }
 

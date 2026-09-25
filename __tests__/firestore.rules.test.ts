@@ -115,4 +115,39 @@ describe("Firestore Security Rules", () => {
       await assertFails(userRef.get());
     });
   });
+
+  describe("lymbrarie_suggestions collection", () => {
+    it("allows anyone (unauthenticated or authenticated) to read suggestions", async () => {
+      const unauthDb = testEnv.unauthenticatedContext().firestore();
+      const sugRef = unauthDb.collection("lymbrarie_suggestions").doc("sug1");
+      await assertSucceeds(sugRef.get());
+    });
+
+    it("allows creating a valid suggestion with text up to 500 characters", async () => {
+      const unauthDb = testEnv.unauthenticatedContext().firestore();
+      const sugRef = unauthDb.collection("lymbrarie_suggestions").doc("sug1");
+      await assertSucceeds(sugRef.set({ text: "Great app!" }));
+    });
+
+    it("prevents creating a suggestion with text longer than 500 characters", async () => {
+      const unauthDb = testEnv.unauthenticatedContext().firestore();
+      const sugRef = unauthDb.collection("lymbrarie_suggestions").doc("sug2");
+      await assertFails(sugRef.set({ text: "a".repeat(501) }));
+    });
+
+    it("prevents editing or deleting suggestions", async () => {
+      await testEnv.withSecurityRulesDisabled(async (context) => {
+        await context
+          .firestore()
+          .collection("lymbrarie_suggestions")
+          .doc("sug1")
+          .set({ text: "Original" });
+      });
+
+      const unauthDb = testEnv.unauthenticatedContext().firestore();
+      const sugRef = unauthDb.collection("lymbrarie_suggestions").doc("sug1");
+      await assertFails(sugRef.update({ text: "Modified" }));
+      await assertFails(sugRef.delete());
+    });
+  });
 });

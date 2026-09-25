@@ -4,6 +4,7 @@ import FooterIndex from "./FooterIndex";
 import HeaderIndex from "./HeaderIndex";
 import IsOffline from "./alerts/IsOfflineAlert";
 import JustClient from "./JustClient";
+import SuggestionsBtn from "./btns/SuggestionsBtn";
 import { PAGES } from "@/utils/consts";
 import { Toaster } from "react-hot-toast";
 import { twJoin } from "tailwind-merge";
@@ -50,12 +51,45 @@ function Layout({ children }: PropsWithChildren): Component {
       >
         <Background />
         <IsOffline />
-        <Toaster reverseOrder={false} position="top-right" />
+        <Toaster
+          reverseOrder={false}
+          position="top-right"
+          toastOptions={{
+            style: {
+              background: "#090d16",
+              color: "#f8fafc",
+              border: "1px solid rgba(139, 92, 246, 0.3)",
+              padding: "10px 18px",
+              borderRadius: "12px",
+              fontSize: "14px",
+              boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.5)",
+            },
+            success: {
+              iconTheme: {
+                primary: "#a855f7",
+                secondary: "#090d16",
+              },
+            },
+            error: {
+              iconTheme: {
+                primary: "#ef4444",
+                secondary: "#090d16",
+              },
+            },
+            loading: {
+              iconTheme: {
+                primary: "#a855f7",
+                secondary: "#090d16",
+              },
+            },
+          }}
+        />
         <div className="relative z-10 w-full flex flex-col justify-start items-center flex-1">
           <HeaderIndex />
           {children}
           {path != PAGES.LOGIN && <FooterIndex />}
         </div>
+        {!path?.includes(PAGES.LOGIN) && <SuggestionsBtn />}
         <AllPopups UID={user?.id as string} />
       </div>
     </JustClient>

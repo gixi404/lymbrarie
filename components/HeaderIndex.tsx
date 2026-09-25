@@ -29,11 +29,12 @@ export default function HeaderIndex(): Component {
         style={styles}
         className="navbar max-w-[1000px] mb-8 md:mb-20 bg-slate-900/80 backdrop-blur-sm md:rounded-2xl px-6 border-b md:border border-violet-500/20 justify-between relative"
       >
-        <Link
-          href={isGuest ? PAGES.GUEST : PAGES.HOME}
-          className="flex items-center justify-start gap-x-3 w-max hover:opacity-90 transition-opacity cursor-default"
-        >
-          <div className="bg-violet-500/20 p-0.5 rounded-full">
+        <div className="flex items-center gap-x-2 sm:gap-x-4">
+          <Link
+            href={isGuest ? PAGES.GUEST : PAGES.HOME}
+            className="flex items-center justify-start gap-x-3 w-max hover:opacity-90 transition-opacity cursor-default"
+          >
+            <div className="bg-violet-500/20 p-0.5 rounded-full hidden sm:block">
             <Image
               src={Favicon.src}
               width={33}
@@ -46,6 +47,7 @@ export default function HeaderIndex(): Component {
             Lymbrarie
           </p>
         </Link>
+        </div>
 
         <nav className="hidden md:flex items-center gap-x-2">
           <Link

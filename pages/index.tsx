@@ -9,7 +9,6 @@ import useTitles from "@/hooks/useTitles";
 import { animated, useSpring } from "@react-spring/web";
 import { animateOpacity, len } from "@/utils/helpers";
 import { BookAdapters } from "@/adapters/book.adapters";
-import { showNotifications } from "@/utils/notifications";
 import { useEffect, useRef, useState } from "react";
 import { useRecoilState } from "recoil";
 import { zeroAtom } from "@/utils/atoms";
@@ -34,8 +33,6 @@ function Index(): Component {
     [, setAllTitles] = useLocalStorage<string[]>("all-titles", []),
     [booksIsEmpty, setBooksIsEmpty] = useState<boolean | null>(null),
     { startLoading, isLoading, finishLoading } = useLoad(),
-    [newNoti] = useLocalStorage("added", false),
-    [deletedNoti] = useLocalStorage("deleted", false),
     [zeroBooks] = useRecoilState<boolean>(zeroAtom),
     showFirstBookMsg: boolean = booksIsEmpty || zeroBooks,
     [nameuser] = useLocalStorage("username", ""),
@@ -52,7 +49,6 @@ function Index(): Component {
     syncUnsubRef = useRef<Unsubscribe | null>(null);
 
   useEffect(() => {
-    showNotifications(newNoti, deletedNoti);
     if (!navigator.onLine) return;
     const unsub = BookAdapters.syncBooks(argsSync);
     if (unsub) syncUnsubRef.current = unsub;
@@ -106,7 +102,6 @@ function Index(): Component {
   }
 
   function animateList(): void {
-    if (newNoti || deletedNoti) return;
     api.start(animateOpacity(1, 400));
   }
 

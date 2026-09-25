@@ -30,7 +30,8 @@ type PopupIds =
   | "offline"
   | "notes"
   | "login"
-  | "recommendation";
+  | "recommendation"
+  | "suggestions";
 
 interface Book {
   id: string;

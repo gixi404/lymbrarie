@@ -114,8 +114,14 @@ function pathIs(path: string, options?: PathOptions): boolean {
   return pathname.includes(path);
 }
 
-const removeItem: Handler<string, void> = item =>
+const removeItem: Handler<string, void> = (item) => {
   window?.localStorage?.removeItem(item);
+  window?.dispatchEvent(
+    new CustomEvent("lymbrarie-local-storage", {
+      detail: { key: item, value: false },
+    })
+  );
+};
 
 const clearStorage: Handler<void, void> = () => window?.localStorage?.clear();
 
