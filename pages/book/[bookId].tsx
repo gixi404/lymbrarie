@@ -140,12 +140,13 @@ function BookId(): Component {
     finishLoading();
   }
 
-  async function updateNotes(): Promise<void> {
+  async function updateNotes(updatedNotes?: string): Promise<void> {
     try {
-      let notesToSave = notes;
-      if (user?.id && notes) {
+      const currentNotes = updatedNotes !== undefined ? updatedNotes : notes;
+      let notesToSave = currentNotes;
+      if (user?.id && currentNotes) {
         const userKey = await getOrCreateUserKey(user.id);
-        notesToSave = encryptDataV2(notes, userKey);
+        notesToSave = encryptDataV2(currentNotes, userKey);
       }
       const dataWithUpdatedNotes: BookData = { ...book?.data, notes: notesToSave };
       await BookAdapters.manageBook(book.id, dataWithUpdatedNotes, user.id as string);
@@ -157,6 +158,7 @@ function BookId(): Component {
       const newVersion: Book[] = [...oldVersion, updatedBook];
       setCacheBooks(newVersion);
       setBook(updatedBook);
+      setNotes(currentNotes);
     } catch (err: any) {
       closePopUp("notes");
       router.push(`${PAGES.ERROR}?notes=${notes}`);

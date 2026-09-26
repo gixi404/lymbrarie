@@ -174,11 +174,13 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
             <option value="default" disabled>
               Estado actual
             </option>
-            {Object.values(BOOK_STATES).map(s => (
-              <option key={s.en[0]} value={s.en[0]}>
-                {s.es}
-              </option>
-            ))}
+            {Object.values(BOOK_STATES)
+              .filter(s => s !== BOOK_STATES.RECOMMENDED)
+              .map(s => (
+                <option key={s.en[0]} value={s.en[0]}>
+                  {s.es}
+                </option>
+              ))}
           </select>
           <ChevronDownIcon
             size={20}

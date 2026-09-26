@@ -16,6 +16,15 @@ import {
   useState,
 } from "react";
 
+function isContentEmpty(str?: string): boolean {
+  if (!str) return true;
+  const clean = str
+    .replace(/<[^>]*>/g, "")
+    .replace(/&nbsp;/g, "")
+    .trim();
+  return clean.length === 0;
+}
+
 function NotesPopUp(props: Props): Component {
   const { closePopUp } = usePopUp(),
     { isGuest } = useGuest(),
@@ -25,8 +34,25 @@ function NotesPopUp(props: Props): Component {
     { isLoading } = useLoad(),
     editorRef = useRef<EditorType | null>(null),
     autoSaveTimer = useRef<Timer | null>(null),
-    originalNotes = useRef<string>(notes),
-    hasInitialized = useRef<boolean>(false);
+    originalNotesRef = useRef<string>(notes),
+    latestNotesRef = useRef<string>(notes);
+
+  const showPlaceholder = !editorLoading && isContentEmpty(notes);
+
+  useEffect(() => {
+    latestNotesRef.current = notes;
+  }, [notes]);
+
+  useEffect(() => {
+    if (editorRef.current) {
+      const p = showPlaceholder ? "Escribe tus notas aquí..." : "";
+      try {
+        editorRef.current.options.set("placeholder", p);
+      } catch {
+        // Fallback if options.set fails
+      }
+    }
+  }, [showPlaceholder]);
 
   useEffect(() => {
     console.time("[profiling] TinyMCE editor initialization");
@@ -44,38 +70,47 @@ function NotesPopUp(props: Props): Component {
     }
   }, [showAlert]);
 
-  function handleChangeContent(content: string): void {
-    setNotes(content);
+  function saveContent(contentToSave?: string): void {
+    const targetContent =
+      contentToSave !== undefined ? contentToSave : latestNotesRef.current;
 
-    if (!hasInitialized.current) {
-      hasInitialized.current = true;
-      return;
-    }
+    if (isGuest) return;
 
-    if (isGuest || loadingFav) return;
-
-    if (content === originalNotes.current) return;
-
-    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
-
-    autoSaveTimer.current = setTimeout(() => {
-      saveContent();
-    }, 2000);
-  }
-
-  function saveContent(): void {
-    if (navigator.onLine && !isGuest) {
-      originalNotes.current = notes;
-      updateNotes();
-    } else if (!navigator.onLine) {
+    if (navigator.onLine) {
+      originalNotesRef.current = targetContent;
+      updateNotes(targetContent);
+    } else {
       setShowAlert(true);
     }
   }
 
+  function handleChangeContent(content: string): void {
+    setNotes(content);
+    latestNotesRef.current = content;
+
+    if (isGuest || loadingFav) return;
+
+    if (content === originalNotesRef.current) return;
+
+    if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+
+    autoSaveTimer.current = setTimeout(() => {
+      saveContent(content);
+    }, 2000);
+  }
+
   function handleClosePopUp(): void {
-    if (autoSaveTimer.current && notes !== originalNotes.current) {
+    if (autoSaveTimer.current) {
       clearTimeout(autoSaveTimer.current);
-      saveContent();
+      autoSaveTimer.current = null;
+    }
+
+    const currentContent = editorRef.current
+      ? editorRef.current.getContent()
+      : latestNotesRef.current;
+
+    if (currentContent !== originalNotesRef.current) {
+      saveContent(currentContent);
     }
     closePopUp("notes");
   }
@@ -95,21 +130,29 @@ function NotesPopUp(props: Props): Component {
           <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             licenseKey="gpl"
-            value={notes}
+            value={notes ?? ""}
             disabled={loadingFav || isGuest}
             onEditorChange={isGuest ? noop : handleChangeContent}
             onInit={(_evt, editor) => {
               console.timeEnd("[profiling] TinyMCE editor initialization");
               editorRef.current = editor;
               setEditorLoading(false);
+              const initialPlaceholder = isContentEmpty(notes)
+                ? "Escribe tus notas aquí..."
+                : "";
+              try {
+                editor.options.set("placeholder", initialPlaceholder);
+              } catch {
+                // Fallback
+              }
             }}
             init={{
               theme: "silver",
               content_css: "dark",
               skin: "oxide-dark",
+              placeholder: "",
               content_style:
-                "body { background-color: #1e293b; color: #e2e8f0; font-family: Poppins, sans-serif; font-size: 16px; padding: 16px; border: 0 !important; outline: 0 !important; box-shadow: none !important; } * { outline: 0 !important; border: 0 !important; box-shadow: none !important; }",
-              placeholder: "...",
+                "body { background-color: #1e293b; color: #e2e8f0; font-family: Poppins, sans-serif; font-size: 16px; padding: 16px; border: 0 !important; outline: 0 !important; box-shadow: none !important; } * { outline: 0 !important; border: 0 !important; box-shadow: none !important; } .mce-content-body[data-mce-placeholder]::before { color: #94a3b8 !important; font-style: italic !important; opacity: 0.8 !important; }",
               height: "100%",
               menubar: false,
               statusbar: false,
@@ -162,6 +205,6 @@ interface Props {
   notes: string;
   setNotes: Dispatch<SetStateAction<string>>;
   loadingFav: boolean;
-  updateNotes: () => void;
+  updateNotes: (updatedNotes?: string) => void;
   title: string;
 }

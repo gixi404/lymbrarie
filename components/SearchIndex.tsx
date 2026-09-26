@@ -25,10 +25,12 @@ export default function SearchIndex(): Component {
       setSelectStateVal(val),
     options = [
       { value: "", label: "Todo" },
-      ...Object.values(BOOK_STATES).map(s => ({
-        value: s.es,
-        label: s.es,
-      })),
+      ...Object.values(BOOK_STATES)
+        .filter(s => s !== BOOK_STATES.RECOMMENDED)
+        .map(s => ({
+          value: s.es,
+          label: s.es,
+        })),
     ],
     getPlaceholder = (): string => {
       const option = options.find(opt => opt.value === selectVal);
