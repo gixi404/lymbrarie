@@ -16,11 +16,13 @@ import {
   useState,
 } from "react";
 
+
+
 function isContentEmpty(str?: string): boolean {
   if (!str) return true;
   const clean = str
     .replace(/<[^>]*>/g, "")
-    .replace(/&nbsp;/g, "")
+    .replace(/&nbsp;/g, " ")
     .trim();
   return clean.length === 0;
 }
@@ -37,22 +39,9 @@ function NotesPopUp(props: Props): Component {
     originalNotesRef = useRef<string>(notes),
     latestNotesRef = useRef<string>(notes);
 
-  const showPlaceholder = !editorLoading && isContentEmpty(notes);
-
   useEffect(() => {
     latestNotesRef.current = notes;
   }, [notes]);
-
-  useEffect(() => {
-    if (editorRef.current) {
-      const p = showPlaceholder ? "Escribe tus notas aquí..." : "";
-      try {
-        editorRef.current.options.set("placeholder", p);
-      } catch {
-        // Fallback if options.set fails
-      }
-    }
-  }, [showPlaceholder]);
 
   useEffect(() => {
     return () => {
@@ -84,11 +73,27 @@ function NotesPopUp(props: Props): Component {
   }
 
   function handleChangeContent(content: string): void {
+    if (isContentEmpty(content)) {
+      if (content !== "") {
+        editorRef.current?.setContent("");
+      }
+      setNotes("");
+      latestNotesRef.current = "";
+
+      if (isGuest || loadingFav) return;
+      if ("" === originalNotesRef.current) return;
+
+      if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
+      autoSaveTimer.current = setTimeout(() => {
+        saveContent("");
+      }, 2000);
+      return;
+    }
+
     setNotes(content);
     latestNotesRef.current = content;
 
     if (isGuest || loadingFav) return;
-
     if (content === originalNotesRef.current) return;
 
     if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
@@ -108,8 +113,10 @@ function NotesPopUp(props: Props): Component {
       ? editorRef.current.getContent()
       : latestNotesRef.current;
 
-    if (currentContent !== originalNotesRef.current) {
-      saveContent(currentContent);
+    const finalContent = isContentEmpty(currentContent) ? "" : currentContent;
+
+    if (finalContent !== originalNotesRef.current) {
+      saveContent(finalContent);
     }
     closePopUp("notes");
   }
@@ -129,26 +136,21 @@ function NotesPopUp(props: Props): Component {
           <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             licenseKey="gpl"
-            value={notes ?? ""}
+            value={isContentEmpty(notes) ? "" : notes}
             disabled={loadingFav || isGuest}
             onEditorChange={isGuest ? noop : handleChangeContent}
             onInit={(_evt, editor) => {
               editorRef.current = editor;
               setEditorLoading(false);
-              const initialPlaceholder = isContentEmpty(notes)
-                ? "Escribe tus notas aquí..."
-                : "";
-              try {
-                editor.options.set("placeholder", initialPlaceholder);
-              } catch {
-                // Fallback
+              if (isContentEmpty(notes)) {
+                editor.setContent("");
               }
             }}
             init={{
               theme: "silver",
               content_css: "dark",
               skin: "oxide-dark",
-              placeholder: "",
+              placeholder: "Escribe tus notas aquí...",
               content_style:
                 "body { background-color: #1e293b; color: #e2e8f0; font-family: Poppins, sans-serif; font-size: 16px; padding: 16px; border: 0 !important; outline: 0 !important; box-shadow: none !important; } * { outline: 0 !important; border: 0 !important; box-shadow: none !important; } .mce-content-body[data-mce-placeholder]::before { color: #94a3b8 !important; font-style: italic !important; opacity: 0.8 !important; }",
               height: "100%",
