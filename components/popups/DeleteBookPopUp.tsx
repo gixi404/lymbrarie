@@ -66,12 +66,12 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
   return (
     <dialog
       onClick={() => closePopUp("delete_book")}
-      className="select-none backdrop-blur-md w-full h-full fixed top-0 z-50 flex justify-center items-start pt-10 bg-transparent px-6 sm:px-0"
+      className="select-none backdrop-blur-sm w-full h-full fixed top-0 z-50 flex justify-center items-start pt-10 bg-slate-950/60 px-6 sm:px-0"
     >
       <animated.div
         onClick={e => e.stopPropagation()}
         style={styles}
-        className="modal-box mt-28 sm:mt-20 w-full bg-slate-900/90 rounded-2xl p-8 backdrop-blur-md border border-violet-500/20"
+        className="modal-box mt-28 sm:mt-20 w-full bg-slate-900 rounded-2xl p-8 border border-violet-500/20 shadow-2xl"
       >
         <div className="flex flex-row justify-start items-start gap-x-4">
           <div className="bg-violet-500/20 p-1.5 rounded-lg">
@@ -89,7 +89,7 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
             disabled={isLoading}
             type="button"
             onClick={() => closePopUp("delete_book")}
-            className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-slate-800/80 border border-violet-500/20 hover:bg-slate-700/80 text-slate-200 text-sm sm:text-base font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
+            className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-slate-800 border border-violet-500/20 hover:bg-slate-700 text-slate-200 text-sm sm:text-base font-medium transition-colors disabled:opacity-50 whitespace-nowrap"
           >
             Cancelar
           </button>
@@ -98,7 +98,7 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
             <button
               disabled
               type="button"
-              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-red-900/50 border border-red-500/30 text-slate-300 text-sm sm:text-base font-medium transition-colors opacity-70 cursor-default whitespace-nowrap"
+              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-red-900 border border-red-500/30 text-slate-300 text-sm sm:text-base font-medium transition-colors opacity-70 cursor-default whitespace-nowrap"
             >
               Eliminando...
             </button>
@@ -106,7 +106,7 @@ function DeleteBookPopUp({ documentId, title, UID, owner }: Props): Component {
             <button
               onClick={deleteDocument}
               type="button"
-              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-red-700/90 hover:bg-red-600 border border-red-500/30 text-white text-sm sm:text-base font-medium transition-colors whitespace-nowrap"
+              className="px-3.5 sm:px-4 py-2.5 rounded-xl bg-red-700 hover:bg-red-600 border border-red-500/30 text-white text-sm sm:text-base font-medium transition-colors whitespace-nowrap"
             >
               Eliminar libro
             </button>

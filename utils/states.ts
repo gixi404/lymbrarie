@@ -1,11 +1,11 @@
 const BOOK_STATES = {
-  READING: { es: "Leyendo", en: ["Reading"], bg: "bg-yellow-600/30" },
-  READ: { es: "Leído", en: ["Read"], bg: "bg-green-600/30" },
-  PENDING: { es: "Pendiente", en: ["Pending"], bg: "bg-orange-600/30" },
-  LENT: { es: "Prestado", en: ["Lent", "Loaned"], bg: "bg-blue-600/30" },
-  RECOMMENDED: { es: "Recomendado", en: ["Recommended"], bg: "bg-violet-600/30" },
-  ABANDONED: { es: "Abandonado", en: ["Abandoned"], bg: "bg-red-600/30" },
-  HALFWAY: { es: "A medias", en: ["Halfway", "Half"], bg: "bg-gray-600/30" },
+  READING: { es: "Leyendo", en: ["Reading"], bg: "bg-amber-950/30 text-amber-500/60 border border-amber-500/60" },
+  READ: { es: "Leído", en: ["Read"], bg: "bg-emerald-950/30 text-emerald-500/60 border border-emerald-500/60" },
+  PENDING: { es: "Pendiente", en: ["Pending"], bg: "bg-sky-950/30 text-sky-500/60 border border-sky-500/60" },
+  LENT: { es: "Prestado", en: ["Lent", "Loaned"], bg: "bg-indigo-950/30 text-indigo-500/60 border border-indigo-500/60" },
+  RECOMMENDED: { es: "Recomendado", en: ["Recommended"], bg: "bg-purple-950/30 text-purple-500/60 border border-purple-500/60" },
+  ABANDONED: { es: "Abandonado", en: ["Abandoned"], bg: "bg-rose-950/30 text-rose-500/60 border border-rose-500/60" },
+  HALFWAY: { es: "A medias", en: ["Halfway", "Half"], bg: "bg-orange-950/30 text-orange-500/60 border border-orange-500/60" },
 } as const;
 
 type BookStateKey = keyof typeof BOOK_STATES;

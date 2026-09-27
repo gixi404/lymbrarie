@@ -19,14 +19,14 @@ function BookStateUI({ state, showDetails }: Props): Component {
 
   const { text, bg }: State = getState();
 
+  if (!text) return null;
+
   return (
     <span
       className={twMerge(
-        text.includes("Reco") || text.includes("Aban")
-          ? "!w-[100px] sm:!w-[125px]"
-          : "max-w-[90px]",
-        `${bg} text-xs sm:text-sm rounded-md w-3/12 min-w-[75px] py-0.5 text-center select-none opacity-90`,
-        showDetails && "absolute bottom-2 right-2 w-24"
+        "px-2.5 py-0.5 text-xs font-semibold rounded-md text-center select-none backdrop-blur-sm shadow-sm transition-all whitespace-nowrap",
+        bg,
+        showDetails ? "absolute bottom-2.5 right-2.5 z-10" : "shrink-0 min-w-[70px]"
       )}
     >
       {text}
