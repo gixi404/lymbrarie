@@ -1,4 +1,4 @@
-import { memo } from "react";
+
 import { twMerge } from "tailwind-merge";
 import { BOOK_STATES } from "@/utils/states";
 import type { Component } from "@/utils/types";
@@ -34,10 +34,7 @@ function BookStateUI({ state, showDetails }: Props): Component {
   );
 }
 
-const BookStateMemo = memo(BookStateUI);
-
 export default fnState;
-export { BookStateMemo };
 
 interface Props {
   state: string;

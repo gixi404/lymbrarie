@@ -4,18 +4,21 @@ import useGuest from "@/hooks/useGuest";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { animateOpacity, clearStorage, len } from "@/utils/helpers";
 import { animated, useSpring } from "@react-spring/web";
-import { AuthAction, withUser } from "next-firebase-auth";
+import { AuthAction, useUser, withUser, type User } from "next-firebase-auth";
 import { PAGES } from "@/utils/consts";
 import { type Auth, getAuth } from "firebase/auth";
 import { type NextRouter, useRouter } from "next/router";
-import type { Component } from "@/utils/types";
+import type { Book, Component } from "@/utils/types";
 import type { ChangeEvent } from "react";
+import { BookAdapters } from "@/adapters/book.adapters";
+import { dismissNoti, notification } from "@/utils/notifications";
 import {
   TypeIcon,
   CircleIcon,
   LibraryIcon,
   LogOutIcon,
   SparklesIcon,
+  Download as DownloadIcon,
 } from "lucide-react";
 
 export default withUser({
@@ -27,12 +30,14 @@ export default withUser({
 
 function ConfigPage(): Component {
   const auth: Auth = getAuth(),
+    user: User = useUser(),
     { push }: NextRouter = useRouter(),
     [animations, setAnimations] = useLocalStorage("animations", true),
     [state, setState] = useLocalStorage("state", true),
     [recommendations, setRecom] = useLocalStorage("recommendations", true),
     [circles, setCircles] = useLocalStorage("circles", true),
     [lang, setLang] = useLocalStorage("language", true),
+    [cacheBooks] = useLocalStorage<Book[] | null>("cache-books", null),
     { isGuest } = useGuest(),
     [username, setUsername] = useLocalStorage("username", ""),
     [styles] = useSpring(() => animateOpacity(1, 400));
@@ -40,6 +45,41 @@ function ConfigPage(): Component {
   function handleUsername(e: ChangeEvent<HTMLInputElement>): void {
     if (len(username) > 38) return;
     else setUsername(e.target.value);
+  }
+
+  async function exportBooksJSON(): Promise<void> {
+    let booksToExport: Book[] = cacheBooks ?? [];
+
+    if ((!booksToExport || booksToExport.length === 0) && user?.id && navigator.onLine) {
+      try {
+        notification("loading", "Obteniendo datos de libros...");
+        const res = await BookAdapters.getBooks(user.id);
+        dismissNoti();
+        if (res.books && res.books.length > 0) {
+          booksToExport = res.books;
+        }
+      } catch (err) {
+        dismissNoti();
+        console.error("Error fetching books for export:", err);
+      }
+    }
+
+    if (!booksToExport || booksToExport.length === 0) {
+      notification("error", "No hay libros para exportar");
+      return;
+    }
+
+    const dataStr =
+      "data:text/json;charset=utf-8," +
+      encodeURIComponent(JSON.stringify(booksToExport, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    const dateStr = new Date().toISOString().split("T")[0];
+    downloadAnchor.setAttribute("download", `lymbrarie_books_${dateStr}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    notification("success", "Datos exportados correctamente");
   }
 
   function forgetSession(): void {
@@ -52,6 +92,7 @@ function ConfigPage(): Component {
     auth.signOut();
     push(PAGES.LOGIN);
   }
+
   return (
     <animated.section
       style={styles}
@@ -65,23 +106,6 @@ function ConfigPage(): Component {
           Icon={TypeIcon}
           label="Nombre de usuario"
         />
-
-        {/* <ConfigOption
-          label="Recomendaciones"
-          textBtn={recommendations ? "Activado" : "Desactivado"}
-          Icon={MegaphoneIcon}
-          action={() => {
-            if (
-              recommendations &&
-              Array.isArray(cacheBooks) &&
-              len(cacheBooks) == 0
-            ) {
-              alert(
-                "Debes añadir al menos un libro para desactivar las recomendaciones."
-              );
-            } else setRecom(!recommendations);
-          }}
-        /> */}
 
         <ConfigOption
           label="Mostrar estado del libro en la lista"
@@ -102,6 +126,14 @@ function ConfigPage(): Component {
           textBtn={circles ? "Activado" : "Desactivado"}
           Icon={CircleIcon}
           action={() => setCircles(!circles)}
+        />
+
+        <ConfigOption
+          label="Exportar datos de libros"
+          textBtn="Exportar (JSON)"
+          Icon={DownloadIcon}
+          noReload
+          action={exportBooksJSON}
         />
       </div>
 

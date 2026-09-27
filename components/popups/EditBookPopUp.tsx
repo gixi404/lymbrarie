@@ -90,20 +90,48 @@ function EditBookPopUp(props: Props): Component {
     const loaned: string = isLent(book.state ?? "") ? (book.loaned ?? "") : "";
     const stateChanged = !isEqual(book.state, data?.state);
     const loanedChanged = isLent(book.state ?? "") && !isEqual(loaned, data?.loaned ?? "");
+    const titleChanged = !isEqual(book.title?.trim(), data?.title?.trim());
+    const authorChanged = !isEqual(book.author?.trim(), data?.author?.trim());
+    const genderChanged = !isEqual(book.gender?.trim(), data?.gender?.trim());
+    const imageChanged = !isEqual(book.image, data?.image);
 
-    let newHistoryEntry: StateHistoryEntry | undefined = undefined;
-    if (stateChanged || loanedChanged) {
-      newHistoryEntry = {
+    const now = new Date().toISOString();
+    const newHistoryEntries: StateHistoryEntry[] = [];
+
+    if (stateChanged || (loanedChanged && !stateChanged)) {
+      newHistoryEntries.push({
         state: book.state ?? "",
-        changedAt: new Date().toISOString(),
+        changedAt: now,
         ...(isLent(book.state ?? "") && loaned ? { loaned } : {}),
-      };
+      });
+    }
+    if (titleChanged) {
+      newHistoryEntries.push({
+        state: `Título modificado por ${book.title}`,
+        changedAt: now,
+      });
+    }
+    if (authorChanged) {
+      newHistoryEntries.push({
+        state: `Autor modificado por ${book.author}`,
+        changedAt: now,
+      });
+    }
+    if (genderChanged) {
+      newHistoryEntries.push({
+        state: `Género modificado por ${book.gender}`,
+        changedAt: now,
+      });
+    }
+    if (imageChanged) {
+      newHistoryEntries.push({
+        state: "Portada actualizada",
+        changedAt: now,
+      });
     }
 
     const existingHistory = data?.stateHistory ?? [];
-    const updatedHistory = newHistoryEntry
-      ? [...existingHistory, newHistoryEntry]
-      : existingHistory;
+    const updatedHistory = [...existingHistory, ...newHistoryEntries];
 
     const updatedData: BookData = { ...book, loaned, stateHistory: updatedHistory };
     const newVersion: Book[] = (cacheBooks ?? []).map((b: Book) =>
@@ -114,7 +142,7 @@ function EditBookPopUp(props: Props): Component {
     const newTitles: string[] = [...allTitles, book.title ?? ""];
 
     try {
-      await BookAdapters.manageBook(documentId, updatedData, UID, newHistoryEntry);
+      await BookAdapters.manageBook(documentId, updatedData, UID, newHistoryEntries);
       setCacheBooks(newVersion);
       setAllTitles(newTitles);
       setScrollLS(scroll);

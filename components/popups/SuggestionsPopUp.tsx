@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import usePopUp from "@/hooks/usePopUp";
 import type { Component } from "@/utils/types";
-import { MegaphoneIcon as Icon } from "lucide-react";
+import { MegaphoneIcon as Icon, X as XIcon } from "lucide-react";
 import DialogContainer from "../DialogContainer";
 import HeaderPopUp from "../HeaderPopUp";
 import { COLLECTION_SUGGESTIONS } from "@/utils/consts";
@@ -112,8 +112,17 @@ function SuggestionsPopUp(): Component {
   return (
     <DialogContainer
       id="suggestions"
-      divClass="items-start max-w-2xl w-full justify-start min-h-0 h-auto sm:h-auto my-auto sm:my-0 sm:mt-10 rounded-2xl sm:rounded-xl"
+      divClass="items-start max-w-2xl w-full justify-start min-h-0 h-auto sm:h-auto my-auto sm:my-0 sm:mt-10 rounded-2xl sm:rounded-xl relative"
     >
+      <button
+        type="button"
+        onClick={() => closePopUp("suggestions")}
+        className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 p-1.5 rounded-lg hover:bg-slate-800/80 transition-colors cursor-pointer z-10"
+        aria-label="Cerrar"
+      >
+        <XIcon size={20} />
+      </button>
+
       <HeaderPopUp icon={<Icon size={30} />} title="Buzón de Sugerencias" />
 
       <div className="w-full flex flex-col gap-y-5 px-1 sm:px-6 mt-2">
@@ -135,15 +144,7 @@ function SuggestionsPopUp(): Component {
               {newSuggestion.length}/500
             </span>
           </div>
-          <div className="flex justify-end gap-x-3">
-            <button
-              type="button"
-              onClick={() => closePopUp("suggestions")}
-              className="px-4 py-2 rounded-xl text-slate-300 hover:bg-slate-800 transition-colors text-sm font-medium"
-              disabled={isSubmitting}
-            >
-              Cerrar
-            </button>
+          <div className="flex justify-end">
             <button
               type="submit"
               className="bg-violet-600 hover:bg-violet-500 text-white px-6 py-2 rounded-xl font-medium transition-colors flex items-center gap-x-2 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
@@ -160,9 +161,8 @@ function SuggestionsPopUp(): Component {
           <h3 className="font-semibold text-lg text-slate-200">Sugerencias recientes</h3>
 
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-8 gap-y-3 text-slate-400">
+            <div className="flex flex-col items-center justify-center py-8 text-slate-400">
               <span className="loading loading-spinner loading-md text-violet-400" />
-              <span className="text-sm font-medium">Cargando sugerencias...</span>
             </div>
           ) : suggestions.length === 0 ? (
             <p className="text-slate-400 text-center py-6 italic text-sm">

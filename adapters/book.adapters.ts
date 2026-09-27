@@ -70,7 +70,7 @@ export class BookAdapters {
     bookId: string,
     data: BookData,
     UID: string,
-    newHistoryEntry?: StateHistoryEntry
+    newHistoryEntry?: StateHistoryEntry | StateHistoryEntry[]
   ): Promise<void> {
     if (data.owner !== UID) {
       console.error("Unauthorized: cannot modify book belonging to another user");
@@ -78,18 +78,21 @@ export class BookAdapters {
     }
 
     if (newHistoryEntry) {
-      const { stateHistory, ...restData } = data;
-      await setDoc(
-        doc(COLLECTION_BOOKS, bookId),
-        {
-          ...restData,
-          stateHistory: arrayUnion(newHistoryEntry),
-        },
-        { merge: true }
-      );
-    } else {
-      await setDoc(doc(COLLECTION_BOOKS, bookId), data);
+      const entries = Array.isArray(newHistoryEntry) ? newHistoryEntry : [newHistoryEntry];
+      if (entries.length > 0) {
+        const { stateHistory, ...restData } = data;
+        await setDoc(
+          doc(COLLECTION_BOOKS, bookId),
+          {
+            ...restData,
+            stateHistory: arrayUnion(...entries),
+          },
+          { merge: true }
+        );
+        return;
+      }
     }
+    await setDoc(doc(COLLECTION_BOOKS, bookId), data);
   }
 
   static async deleteBook(bookId: string, UID: string, ownerCheck: string): Promise<void> {

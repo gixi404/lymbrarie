@@ -8,10 +8,7 @@ const BOOK_STATES = {
   HALFWAY: { es: "A medias", en: ["Halfway", "Half"], bg: "bg-orange-950/30 text-orange-500/60 border border-orange-500/60" },
 } as const;
 
-type BookStateKey = keyof typeof BOOK_STATES;
 
-const STATE_ES_VALUES: string[] = Object.values(BOOK_STATES).map(s => s.es);
-const STATE_EN_VALUES: string[] = Object.values(BOOK_STATES).flatMap(s => s.en);
 
 function translateState(state: string): string {
   const entry = Object.values(BOOK_STATES).find(
@@ -33,9 +30,7 @@ function isLent(state: string): boolean {
 
 export {
   BOOK_STATES,
-  type BookStateKey,
-  STATE_ES_VALUES,
-  STATE_EN_VALUES,
+
   translateState,
   mapStateToEnglish,
   isLent,

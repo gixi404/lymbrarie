@@ -29,9 +29,4 @@ function decrypt(data: unknown): unknown {
   }
 }
 
-function encrypt(data: unknown): string {
-  const stringData: string = JSON.stringify(data);
-  return Rabbit.encrypt(stringData, key).toString();
-}
-
-export { decrypt, encrypt };
+export { decrypt };

@@ -26,6 +26,7 @@ const popupsAtom = cachedAtom<any>("popups-atom", {
   login: false,
   recommendation: false,
   suggestions: false,
+  history: false,
 });
 
 const zeroAtom = cachedAtom<boolean>("zero-atom", false);

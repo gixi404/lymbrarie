@@ -13,4 +13,4 @@ interface Load {
   finishLoading: Void;
 }
 
-export type Void = () => void;
+type Void = () => void;

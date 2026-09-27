@@ -19,7 +19,7 @@ type Timer = ReturnType<typeof setTimeout>;
 
 type Doc = QueryDocumentSnapshot<DocumentData, DocumentData>;
 
-type SelectOpt = { value: string; label: string }[];
+
 
 type SortModes = "asc" | "desc" | "random";
 
@@ -31,7 +31,8 @@ type PopupIds =
   | "notes"
   | "login"
   | "recommendation"
-  | "suggestions";
+  | "suggestions"
+  | "history";
 
 interface StateHistoryEntry {
   state: string;
@@ -85,6 +86,6 @@ export type {
   SelectEvent,
   ArgsSync,
   Timer,
-  SelectOpt,
+
   ShuffleAtom,
 };

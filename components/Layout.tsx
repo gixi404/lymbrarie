@@ -46,14 +46,14 @@ function Layout({ children }: PropsWithChildren): Component {
       <div
         className={twJoin(
           !path?.includes(PAGES.LOGIN) && "md:pt-6",
-          "relative overflow-y-hidden overflow-x-hidden min-h-screen w-full bg-slate-950 font-mono flex flex-col justify-start items-center"
+          "relative overflow-y-hidden overflow-x-hidden min-h-screen w-full bg-slate-950 font-mono flex flex-col justify-start items-center",
         )}
       >
         <Background />
         <IsOffline />
         <Toaster
           reverseOrder={false}
-          position="top-right"
+          position="top-center"
           toastOptions={{
             style: {
               background: "#090d16",
@@ -84,7 +84,7 @@ function Layout({ children }: PropsWithChildren): Component {
             },
           }}
         />
-        <div className="relative z-10 w-full flex flex-col justify-start items-center flex-1">
+        <div className="relative w-full flex flex-col justify-start items-center flex-1">
           <HeaderIndex />
           {children}
           {path != PAGES.LOGIN && <FooterIndex />}

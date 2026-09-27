@@ -12,6 +12,7 @@ function ConfigOption(props: Props): Component {
     inputVal,
     isSelect,
     selectOpts,
+    noReload,
   } = props;
 
   if (isSelect)
@@ -65,7 +66,9 @@ function ConfigOption(props: Props): Component {
       <button
         onClick={() => {
           action?.();
-          location.reload();
+          if (!noReload) {
+            location.reload();
+          }
         }}
         id={label}
         className="sm:w-[220px] w-full h-11 rounded-xl bg-slate-900/60 border border-violet-500/20 hover:border-violet-500/40 transition-colors"
@@ -83,6 +86,7 @@ interface BaseProps {
   label: string;
   action?: () => void;
   textBtn?: string;
+  noReload?: boolean;
 }
 
 interface InputProps extends BaseProps {

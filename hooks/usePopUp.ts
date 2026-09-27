@@ -16,6 +16,7 @@ function usePopUp(): PopUp {
     closePopUp("add_book");
     closePopUp("notes");
     closePopUp("recommendation");
+    closePopUp("history");
   }
 
   function closeAllPopUps(): void {

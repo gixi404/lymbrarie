@@ -1,8 +1,8 @@
 import BackBtn from "@/components/btns/BackBtn";
-import BookStateHistory from "@/components/BookStateHistory";
 import DEFAULT_COVER from "@/public/cover.webp";
 import DeleteBookPopUp from "@/components/popups/DeleteBookPopUp";
 import EditBookPopUp from "@/components/popups/EditBookPopUp";
+import HistoryPopUp from "@/components/popups/HistoryPopUp";
 import Head from "next/head";
 import Image from "next/image";
 import LoaderCircle from "@/components/LoaderCircle";
@@ -23,7 +23,7 @@ import { twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
 import { useRecoilState } from "recoil";
 import { animated, type AnimatedComponent, useSpring } from "@react-spring/web";
-import type { Book, BookData, Component, Handler } from "@/utils/types";
+import type { Book, BookData, Component, Handler, StateHistoryEntry } from "@/utils/types";
 import {
   type Auth,
   getAuth,
@@ -34,6 +34,7 @@ import {
   Trash as DeleteIcon,
   SquarePen as EditIcon,
   BookmarkCheck as FavoriteIcon,
+  History as HistoryIcon,
   Library as LibraryIcon,
   Notebook as NotesIcon,
   Bookmark as RemoveFavIcon,
@@ -149,10 +150,35 @@ function BookId(): Component {
         const userKey = await getOrCreateUserKey(user.id);
         notesToSave = encryptDataV2(currentNotes, userKey);
       }
-      const dataWithUpdatedNotes: BookData = { ...book?.data, notes: notesToSave };
-      await BookAdapters.manageBook(book.id, dataWithUpdatedNotes, user.id as string);
 
-      const updatedBook: Book = { ...book, data: { ...book?.data, notes: notesToSave } };
+      const oldEncryptedNotes = book?.data?.notes ?? "";
+      const isNotesChanged = notesToSave !== oldEncryptedNotes;
+
+      let newHistoryEntry: StateHistoryEntry | undefined = undefined;
+      let updatedHistory = book?.data?.stateHistory ?? [];
+
+      if (isNotesChanged) {
+        newHistoryEntry = {
+          state: "Notas actualizadas",
+          changedAt: new Date().toISOString(),
+        };
+        updatedHistory = [...updatedHistory, newHistoryEntry];
+      }
+
+      const dataWithUpdatedNotes: BookData = {
+        ...book?.data,
+        notes: notesToSave,
+        stateHistory: updatedHistory,
+      };
+
+      await BookAdapters.manageBook(
+        book.id,
+        dataWithUpdatedNotes,
+        user.id as string,
+        newHistoryEntry
+      );
+
+      const updatedBook: Book = { ...book, data: dataWithUpdatedNotes };
       const oldVersion: Book[] = (cacheBooks ?? []).filter(
         (b: Book) => b?.id != documentId
       );
@@ -172,8 +198,25 @@ function BookId(): Component {
   async function toggleFav(): Promise<void> {
     try {
       setLoadingFav(true);
-      const dataWithUpdatedFav: BookData = { ...book?.data, isFav: !checkFav };
-      await BookAdapters.manageBook(documentId, dataWithUpdatedFav, user.id as string);
+      const isAdding = !checkFav;
+      const newHistoryEntry: StateHistoryEntry = {
+        state: isAdding ? "Añadido a favoritos" : "Quitado de favoritos",
+        changedAt: new Date().toISOString(),
+      };
+      const updatedHistory = [...(book?.data?.stateHistory ?? []), newHistoryEntry];
+      const dataWithUpdatedFav: BookData = {
+        ...book?.data,
+        isFav: isAdding,
+        stateHistory: updatedHistory,
+      };
+
+      await BookAdapters.manageBook(
+        documentId,
+        dataWithUpdatedFav,
+        user.id as string,
+        newHistoryEntry
+      );
+
       const oldVersion: Book[] = (cacheBooks ?? []).filter(
         (b: Book) => b?.id != documentId
       );
@@ -184,16 +227,50 @@ function BookId(): Component {
       setCacheBooks(newVersion);
       setBook({ id: documentId, data: dataWithUpdatedFav });
       setLoadingFav(false);
+      if (typeof document !== "undefined") {
+        (document.activeElement as HTMLElement)?.blur();
+      }
       dismissNoti();
       notification(
         "success",
-        !checkFav ? "Añadido a favoritos" : "Eliminado de favoritos"
+        isAdding ? "Añadido a favoritos" : "Eliminado de favoritos"
       );
     } catch (err: any) {
       setLoadingFav(false);
+      if (typeof document !== "undefined") {
+        (document.activeElement as HTMLElement)?.blur();
+      }
       dismissNoti();
       notification("error", "Error al actualizar favoritos");
       console.error(`catch 'toggleFav' ${err.message}`);
+    }
+  }
+
+  async function handleShareHistory(): Promise<void> {
+    try {
+      const newHistoryEntry: StateHistoryEntry = {
+        state: "Libro compartido",
+        changedAt: new Date().toISOString(),
+      };
+      const updatedHistory = [...(book?.data?.stateHistory ?? []), newHistoryEntry];
+      const updatedBookData: BookData = {
+        ...book?.data,
+        stateHistory: updatedHistory,
+      };
+      const updatedBook: Book = { id: documentId, data: updatedBookData };
+      setBook(updatedBook);
+      if (cacheBooks) {
+        const oldVersion = cacheBooks.filter((b: Book) => b?.id !== documentId);
+        setCacheBooks([...oldVersion, updatedBook]);
+      }
+      await BookAdapters.manageBook(
+        documentId,
+        updatedBookData,
+        user.id as string,
+        newHistoryEntry
+      );
+    } catch (err: any) {
+      console.error(`catch 'handleShareHistory' ${err.message}`);
     }
   }
 
@@ -209,6 +286,7 @@ function BookId(): Component {
       {popup.offline && <OfflinePopUp />}
       {popup.edit_book && <EditBookPopUp data={book} documentId={documentId} UID={user.id as string} />}
       {popup.notes && <NotesPopUp {...notesProps} />}
+      {popup.history && <HistoryPopUp history={book?.data?.stateHistory} />}
       {popup.delete_book && (
         <DeleteBookPopUp
           documentId={documentId}
@@ -289,34 +367,59 @@ function BookId(): Component {
                 <NotesIcon className="w-6 h-6" />
               </button>
 
-              <div className="dropdown dropdown-top dropdown-right">
+              <div
+                className={twMerge(
+                  "dropdown dropdown-top dropdown-right",
+                  loadingFav && "dropdown-open"
+                )}
+              >
                 <SettingsBtn />
 
                 <ul
                   tabIndex={0}
-                  className={twMerge(
-                    loadingFav ? "hidden" : "block",
-                    "mt-3 z-[1] shadow menu menu-sm dropdown-content rounded-xl border border-violet-500/20 w-[240px] bg-slate-800 mb-1 text-white"
-                  )}
+                  className="mt-3 z-[1] shadow menu menu-sm dropdown-content rounded-xl border border-violet-500/20 w-[240px] bg-slate-800 mb-1 text-white flex flex-col gap-y-1"
                 >
                   <li
-                    className="hover:bg-violet-500/15 transition-colors rounded-xl"
+                    className={twMerge(
+                      "hover:bg-violet-500/15 transition-colors rounded-xl",
+                      loadingFav && "opacity-80 pointer-events-none"
+                    )}
                     onClick={() =>
                       navigator.onLine ? toggleFav() : openPopUp("offline")
                     }
                   >
                     <div className="flex flex-row items-center justify-start gap-x-3">
-                      {checkFav ? (
+                      {loadingFav ? (
+                        <span className="loading loading-spinner loading-xs text-violet-300" />
+                      ) : checkFav ? (
                         <FavoriteIcon size={18} className="text-violet-300" />
                       ) : (
                         <RemoveFavIcon size={18} className="text-violet-300" />
                       )}
-                      <p>{checkFav ? "Quitar de favoritos" : "Añadir a favoritos"}</p>
+                      <p>
+                        {loadingFav
+                          ? checkFav
+                            ? "Quitando de favoritos"
+                            : "Añadiendo a favoritos...."
+                          : checkFav
+                          ? "Quitar de favoritos"
+                          : "Añadir a favoritos"}
+                      </p>
                     </div>
                   </li>
 
                   <li
-                    className="my-1.5 hover:bg-violet-500/15 transition-colors rounded-xl"
+                    className="hover:bg-violet-500/15 transition-colors rounded-xl"
+                    onClick={() => openPopUp("history")}
+                  >
+                    <div className="flex flex-row items-center justify-start gap-x-3">
+                      <HistoryIcon size={18} className="text-violet-300" />
+                      <p>Historial</p>
+                    </div>
+                  </li>
+
+                  <li
+                    className="hover:bg-violet-500/15 transition-colors rounded-xl"
                     onClick={() =>
                       navigator.onLine
                         ? openPopUp("edit_book")
@@ -345,12 +448,10 @@ function BookId(): Component {
                 </ul>
               </div>
 
-              <ShareBtn title={title} />
+              <ShareBtn title={title} onShare={handleShareHistory} />
             </animated.div>
           </div>
         </article>
-
-        <BookStateHistory history={book?.data?.stateHistory} />
       </div>
     </animated.section>
   );
