@@ -72,13 +72,13 @@ export default function GuestBookPage(): Component {
       {popup.login && <LogInPopUp />}
       {popup.notes && <NotesPopUp {...notesProps} />}
 
-      <BackBtn />
-
-      <article
-        id="screenshot"
-        className="w-full max-w-4xl bg-slate-900/40 backdrop-blur-sm border border-violet-500/20
-          md:rounded-2xl p-8 flex flex-col sm:flex-row gap-8 relative items-center justify-center"
-      >
+      <div className="w-full max-w-4xl flex flex-col items-center">
+        <BackBtn />
+        <article
+          id="screenshot"
+          className="w-full bg-slate-900/40 backdrop-blur-sm border border-violet-500/20
+            md:rounded-2xl p-8 flex flex-col sm:flex-row gap-8 relative items-center justify-center"
+        >
         <div className="flex-shrink-0">
           <div className="md:bg-violet-500/10 p-1.5 rounded-xl">
             <Cover
@@ -120,8 +120,9 @@ export default function GuestBookPage(): Component {
                 <p className="text-base sm:text-lg">{stateText}</p>
               </div>
             </div>
+          </div>
 
-            <animated.div
+          <animated.div
               id="icons"
               style={stylesIcons}
               className="flex items-center gap-x-3"
@@ -171,9 +172,9 @@ export default function GuestBookPage(): Component {
                 </ul>
               </div>
             </animated.div>
-          </div>
         </div>
       </article>
+      </div>
     </animated.section>
   );
 }

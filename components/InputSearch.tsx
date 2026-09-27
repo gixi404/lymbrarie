@@ -12,6 +12,10 @@ function InputSearch({ query, setQuery, isLoading }: Props) {
           placeholder="Busca por título o autor"
           type="search"
           autoFocus
+          autoComplete="off"
+          autoCorrect="off"
+          autoCapitalize="none"
+          spellCheck="false"
           className="join-item w-full h-14 bg-slate-800/70 backdrop-blur-sm border-2 border-violet-500/60 rounded-l-xl focus:outline-none focus:border-violet-500/40 transition-colors placeholder:text-slate-300/90 text-lg px-6 border-r-0 placeholder:text-sm sm:placeholder:text-lg"
         />
         <button

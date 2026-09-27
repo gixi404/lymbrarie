@@ -10,7 +10,7 @@ import { dismissNoti, notification } from "@/utils/notifications";
 import { PAGES } from "@/utils/consts";
 import { isLent } from "@/utils/helpers";
 import { useRecoilState } from "recoil";
-import type { Book, BookData, Component } from "@/utils/types";
+import type { Book, BookData, Component, StateHistoryEntry } from "@/utils/types";
 import { type NextRouter, useRouter } from "next/router";
 import { useRef, type FormEvent } from "react";
 
@@ -43,7 +43,15 @@ function NewBookPopUp({ UID }: Props): Component {
 
     try {
       const id: string = crypto.randomUUID();
-      const data: BookData = { ...book, owner: UID };
+      const initialState = book.state || "Pending";
+      const initialHistory: StateHistoryEntry[] = [
+        {
+          state: initialState,
+          changedAt: new Date().toISOString(),
+          ...(isLent(initialState) && book.loaned ? { loaned: book.loaned } : {}),
+        },
+      ];
+      const data: BookData = { ...book, owner: UID, stateHistory: initialHistory };
       await BookAdapters.manageBook(id, data, UID);
       const newVersion: Book[] = [...(cacheBooks ?? []), { id, data }];
       setCacheBooks(newVersion);
@@ -81,6 +89,7 @@ function NewBookPopUp({ UID }: Props): Component {
         onSubmit={newBook}
         ref={formRef}
         method="dialog"
+        autoComplete="off"
         className="w-full border-violet-500/10"
       >
         <div className="flex justify-end items-center gap-x-3 mt-3">

@@ -1,8 +1,9 @@
 import { COLLECTION_BOOKS, PAGES } from "@/utils/consts";
 import { isNull, isEqual } from "es-toolkit";
 import { type Unsubscribe } from "firebase/auth";
-import type { ArgsSync, Book, BookData, Doc } from "@/utils/types";
+import type { ArgsSync, Book, BookData, Doc, StateHistoryEntry } from "@/utils/types";
 import {
+  arrayUnion,
   deleteDoc,
   doc,
   getDocs,
@@ -65,12 +66,30 @@ export class BookAdapters {
     }
   }
 
-  static async manageBook(bookId: string, data: BookData, UID: string): Promise<void> {
+  static async manageBook(
+    bookId: string,
+    data: BookData,
+    UID: string,
+    newHistoryEntry?: StateHistoryEntry
+  ): Promise<void> {
     if (data.owner !== UID) {
       console.error("Unauthorized: cannot modify book belonging to another user");
       return;
     }
-    await setDoc(doc(COLLECTION_BOOKS, bookId), data);
+
+    if (newHistoryEntry) {
+      const { stateHistory, ...restData } = data;
+      await setDoc(
+        doc(COLLECTION_BOOKS, bookId),
+        {
+          ...restData,
+          stateHistory: arrayUnion(newHistoryEntry),
+        },
+        { merge: true }
+      );
+    } else {
+      await setDoc(doc(COLLECTION_BOOKS, bookId), data);
+    }
   }
 
   static async deleteBook(bookId: string, UID: string, ownerCheck: string): Promise<void> {

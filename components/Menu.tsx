@@ -32,7 +32,7 @@ const Nav = memo(function Nav(): Component {
         }
         href={PAGES.CONFIG}
       >
-        &gt;&nbsp;&nbsp;Configuración
+        &gt;&nbsp;&nbsp;Preferencias
       </Link>
     </nav>
   );

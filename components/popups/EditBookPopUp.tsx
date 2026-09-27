@@ -10,7 +10,7 @@ import { GENDERS, PAGES } from "@/utils/consts";
 import { tLC, isLent } from "@/utils/helpers";
 import { scrollAtom, coverAtom } from "@/utils/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
-import type { Book, BookData, Component } from "@/utils/types";
+import type { Book, BookData, Component, StateHistoryEntry } from "@/utils/types";
 import { type NextRouter, useRouter } from "next/router";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 
@@ -65,6 +65,7 @@ function EditBookPopUp(props: Props): Component {
       loaned: data?.loaned,
       notes: data?.notes ?? "",
       isFav: data?.isFav ?? false,
+      stateHistory: data?.stateHistory ?? [],
     };
     setBook(loadData);
     setIsCustomGender(!GENDERS.includes(tLC(data?.gender ?? "")));
@@ -86,17 +87,34 @@ function EditBookPopUp(props: Props): Component {
     startLoading();
     notification("loading", "Editando...");
 
-    const loaned: string = isLent(book.state ?? "") ? (book.loaned ?? "") : "",
-      updatedData: BookData = { ...book, loaned },
-      newVersion: Book[] = (cacheBooks ?? []).map((b: Book) =>
-        b.id === documentId ? { id: documentId, data: updatedData } : b
-      ),
-      titlePage: string = encodeURIComponent(book.title ?? ""),
-      newPath: string = `${PAGES.BOOK}/${titlePage}`,
-      newTitles: string[] = [...allTitles, book.title ?? ""];
+    const loaned: string = isLent(book.state ?? "") ? (book.loaned ?? "") : "";
+    const stateChanged = !isEqual(book.state, data?.state);
+    const loanedChanged = isLent(book.state ?? "") && !isEqual(loaned, data?.loaned ?? "");
+
+    let newHistoryEntry: StateHistoryEntry | undefined = undefined;
+    if (stateChanged || loanedChanged) {
+      newHistoryEntry = {
+        state: book.state ?? "",
+        changedAt: new Date().toISOString(),
+        ...(isLent(book.state ?? "") && loaned ? { loaned } : {}),
+      };
+    }
+
+    const existingHistory = data?.stateHistory ?? [];
+    const updatedHistory = newHistoryEntry
+      ? [...existingHistory, newHistoryEntry]
+      : existingHistory;
+
+    const updatedData: BookData = { ...book, loaned, stateHistory: updatedHistory };
+    const newVersion: Book[] = (cacheBooks ?? []).map((b: Book) =>
+      b.id === documentId ? { id: documentId, data: updatedData } : b
+    );
+    const titlePage: string = encodeURIComponent(book.title ?? "");
+    const newPath: string = `${PAGES.BOOK}/${titlePage}`;
+    const newTitles: string[] = [...allTitles, book.title ?? ""];
 
     try {
-      await BookAdapters.manageBook(documentId, updatedData, UID);
+      await BookAdapters.manageBook(documentId, updatedData, UID, newHistoryEntry);
       setCacheBooks(newVersion);
       setAllTitles(newTitles);
       setScrollLS(scroll);
@@ -141,6 +159,7 @@ function EditBookPopUp(props: Props): Component {
         onSubmit={editBook}
         ref={form}
         method="dialog"
+        autoComplete="off"
         className="flex justify-end items-center font-public max-w-full gap-x-2"
       >
         <button

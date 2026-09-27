@@ -1,4 +1,5 @@
 import BackBtn from "@/components/btns/BackBtn";
+import BookStateHistory from "@/components/BookStateHistory";
 import DEFAULT_COVER from "@/public/cover.webp";
 import DeleteBookPopUp from "@/components/popups/DeleteBookPopUp";
 import EditBookPopUp from "@/components/popups/EditBookPopUp";
@@ -217,137 +218,140 @@ function BookId(): Component {
         />
       )}
 
-      <BackBtn />
-
-      <article
-        id="screenshot"
-        className="w-full max-w-4xl bg-slate-900/40 backdrop-blur-sm border border-violet-500/20 
-          md:rounded-2xl p-8 flex flex-col sm:flex-row gap-8 relative items-center justify-center"
-      >
-        <div className="flex-shrink-0">
-          <div className="md:bg-violet-500/10 p-1.5 rounded-xl">
-            <Cover
-              priority
-              style={stylesImg}
-              className="select-none w-[200px] h-[300px] aspect-[2/3] rounded-lg object-cover"
-              src={imgSrc}
-              width={200}
-              height={300}
-              alt="cover"
-              onError={() => setImgSrc(DEFAULT_COVER.src)}
-            />
-          </div>
-        </div>
-
-        <div className="flex flex-col justify-between w-full gap-y-6">
-          <div className="space-y-8">
-            <p className="text-2xl sm:text-3xl font-semibold text-slate-200 break-words leading-tight">
-              {book?.data?.title}
-            </p>
-
-            <div className="space-y-3 text-slate-300">
-              <div className="flex items-center gap-x-3">
-                <div className="bg-violet-500/20 p-2 rounded-lg">
-                  <UserIcon size={18} className="text-violet-300" />
-                </div>
-                <p className="text-base sm:text-lg">
-                  {book?.data?.author || "Autor desconocido"}
-                </p>
-              </div>
-
-              <div className="flex items-center gap-x-3">
-                <div className="bg-violet-500/20 p-2 rounded-lg">
-                  <StateIcon size={18} className="text-violet-300" />
-                </div>
-                <p className="text-base sm:text-lg capitalize">
-                  {translateGender(book?.data?.gender ?? "")}
-                </p>
-              </div>
-
-              <div id="state-cont" className="flex items-center gap-x-3">
-                <div className="bg-violet-500/20 p-2 rounded-lg">
-                  <LibraryIcon size={18} className="text-violet-300" />
-                </div>
-                <p className="text-base sm:text-lg">
-                  {translateState(book?.data?.state ?? "")}
-                  {isLent(translateState(book?.data?.state ?? "")) && ` ${book?.data?.loaned}`}
-                </p>
-              </div>
+      <div className="w-full max-w-4xl flex flex-col items-center">
+        <BackBtn />
+        <article
+          id="screenshot"
+          className="w-full bg-slate-900/40 backdrop-blur-sm border border-violet-500/20 
+            md:rounded-2xl p-8 flex flex-col sm:flex-row gap-8 relative items-center justify-center"
+        >
+          <div className="flex-shrink-0">
+            <div className="md:bg-violet-500/10 p-1.5 rounded-xl">
+              <Cover
+                priority
+                style={stylesImg}
+                className="select-none w-[200px] h-[300px] aspect-[2/3] rounded-lg object-cover"
+                src={imgSrc}
+                width={200}
+                height={300}
+                alt="cover"
+                onError={() => setImgSrc(DEFAULT_COVER.src)}
+              />
             </div>
           </div>
 
-          <animated.div
-            id="icons"
-            style={stylesIcons}
-            className="flex items-center gap-x-3"
-          >
-            <button
-              onClick={() => openPopUp("notes")}
-              className="btn btn-square bg-slate-700/30 sm:bg-slate-700/25 hover:bg-slate-700/50 border-2 border-slate-700/40 mb-1 mt-4 sm:mt-0"
+          <div className="flex flex-col justify-between w-full gap-y-6">
+            <div className="space-y-8">
+              <p className="text-2xl sm:text-3xl font-semibold text-slate-200 break-words leading-tight">
+                {book?.data?.title}
+              </p>
+
+              <div className="space-y-3 text-slate-300">
+                <div className="flex items-center gap-x-3">
+                  <div className="bg-violet-500/20 p-2 rounded-lg">
+                    <UserIcon size={18} className="text-violet-300" />
+                  </div>
+                  <p className="text-base sm:text-lg">
+                    {book?.data?.author || "Autor desconocido"}
+                  </p>
+                </div>
+
+                <div className="flex items-center gap-x-3">
+                  <div className="bg-violet-500/20 p-2 rounded-lg">
+                    <StateIcon size={18} className="text-violet-300" />
+                  </div>
+                  <p className="text-base sm:text-lg capitalize">
+                    {translateGender(book?.data?.gender ?? "")}
+                  </p>
+                </div>
+
+                <div id="state-cont" className="flex items-center gap-x-3">
+                  <div className="bg-violet-500/20 p-2 rounded-lg">
+                    <LibraryIcon size={18} className="text-violet-300" />
+                  </div>
+                  <p className="text-base sm:text-lg">
+                    {translateState(book?.data?.state ?? "")}
+                    {isLent(translateState(book?.data?.state ?? "")) && ` ${book?.data?.loaned}`}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <animated.div
+              id="icons"
+              style={stylesIcons}
+              className="flex items-center gap-x-3"
             >
-              <NotesIcon className="w-6 h-6" />
-            </button>
-
-            <div className="dropdown dropdown-top dropdown-right">
-              <SettingsBtn />
-
-              <ul
-                tabIndex={0}
-                className={twMerge(
-                  loadingFav ? "hidden" : "block",
-                  "mt-3 z-[1] shadow menu menu-sm dropdown-content rounded-xl border border-violet-500/20 w-[240px] bg-slate-800 mb-1 text-white"
-                )}
+              <button
+                onClick={() => openPopUp("notes")}
+                className="btn btn-square bg-slate-700/30 sm:bg-slate-700/25 hover:bg-slate-700/50 border-2 border-slate-700/40 mb-1 mt-4 sm:mt-0"
               >
-                <li
-                  className="hover:bg-violet-500/15 transition-colors rounded-xl"
-                  onClick={() =>
-                    navigator.onLine ? toggleFav() : openPopUp("offline")
-                  }
-                >
-                  <div className="flex flex-row items-center justify-start gap-x-3">
-                    {checkFav ? (
-                      <FavoriteIcon size={18} className="text-violet-300" />
-                    ) : (
-                      <RemoveFavIcon size={18} className="text-violet-300" />
-                    )}
-                    <p>{checkFav ? "Quitar de favoritos" : "Añadir a favoritos"}</p>
-                  </div>
-                </li>
+                <NotesIcon className="w-6 h-6" />
+              </button>
 
-                <li
-                  className="my-1.5 hover:bg-violet-500/15 transition-colors rounded-xl"
-                  onClick={() =>
-                    navigator.onLine
-                      ? openPopUp("edit_book")
-                      : openPopUp("offline")
-                  }
-                >
-                  <div className="flex flex-row items-center justify-start gap-x-3">
-                    <EditIcon size={18} className="text-violet-300" />
-                    <p>Editar libro</p>
-                  </div>
-                </li>
+              <div className="dropdown dropdown-top dropdown-right">
+                <SettingsBtn />
 
-                <li
-                  className="hover:bg-violet-500/15 transition-colors rounded-xl"
-                  onClick={() =>
-                    navigator.onLine
-                      ? openPopUp("delete_book")
-                      : openPopUp("offline")
-                  }
+                <ul
+                  tabIndex={0}
+                  className={twMerge(
+                    loadingFav ? "hidden" : "block",
+                    "mt-3 z-[1] shadow menu menu-sm dropdown-content rounded-xl border border-violet-500/20 w-[240px] bg-slate-800 mb-1 text-white"
+                  )}
                 >
-                  <div className="flex flex-row items-center justify-start gap-x-3">
-                    <DeleteIcon size={18} className="text-violet-300" />
-                    <p>Eliminar libro</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
+                  <li
+                    className="hover:bg-violet-500/15 transition-colors rounded-xl"
+                    onClick={() =>
+                      navigator.onLine ? toggleFav() : openPopUp("offline")
+                    }
+                  >
+                    <div className="flex flex-row items-center justify-start gap-x-3">
+                      {checkFav ? (
+                        <FavoriteIcon size={18} className="text-violet-300" />
+                      ) : (
+                        <RemoveFavIcon size={18} className="text-violet-300" />
+                      )}
+                      <p>{checkFav ? "Quitar de favoritos" : "Añadir a favoritos"}</p>
+                    </div>
+                  </li>
 
-            <ShareBtn title={title} />
-          </animated.div>
-        </div>
-      </article>
+                  <li
+                    className="my-1.5 hover:bg-violet-500/15 transition-colors rounded-xl"
+                    onClick={() =>
+                      navigator.onLine
+                        ? openPopUp("edit_book")
+                        : openPopUp("offline")
+                    }
+                  >
+                    <div className="flex flex-row items-center justify-start gap-x-3">
+                      <EditIcon size={18} className="text-violet-300" />
+                      <p>Editar libro</p>
+                    </div>
+                  </li>
+
+                  <li
+                    className="hover:bg-violet-500/15 transition-colors rounded-xl"
+                    onClick={() =>
+                      navigator.onLine
+                        ? openPopUp("delete_book")
+                        : openPopUp("offline")
+                    }
+                  >
+                    <div className="flex flex-row items-center justify-start gap-x-3">
+                      <DeleteIcon size={18} className="text-violet-300" />
+                      <p>Eliminar libro</p>
+                    </div>
+                  </li>
+                </ul>
+              </div>
+
+              <ShareBtn title={title} />
+            </animated.div>
+          </div>
+        </article>
+
+        <BookStateHistory history={book?.data?.stateHistory} />
+      </div>
     </animated.section>
   );
 }

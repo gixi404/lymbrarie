@@ -39,13 +39,17 @@ export default function SearchIndex(): Component {
 
   return (
     <div className="w-full mb-0 sm:mb-10 flex flex-col items-center gap-y-8">
-      <form className="w-full max-w-3xl flex flex-col items-center justify-center select-none px-3 sm:px-0">
+      <form autoComplete="off" className="w-full max-w-3xl flex flex-col items-center justify-center select-none px-3 sm:px-0">
         <div className="w-full flex flex-col sm:flex-row gap-4 justify-center items-center">
           <div className="join w-full sm:w-auto max-w-xl">
             <input
               id="input-search"
               value={value}
               onChange={handleSearch}
+              autoComplete="off"
+              autoCorrect="off"
+              autoCapitalize="none"
+              spellCheck="false"
               className="focus:outline-0 focus:border-rose-300/10 backdrop-blur-[2px] input join-item flex-1 min-w-0 sm:w-[300px] h-14 bg-slate-800/60 border-2 border-rose-300/10 placeholder:text-slate-300/70 text-sm sm:text-lg text-slate-300 placeholder:w-full"
               placeholder="Busca en tu biblioteca"
               type="search"

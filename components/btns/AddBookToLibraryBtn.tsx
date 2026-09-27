@@ -3,7 +3,7 @@ import useLocalStorage from "@/hooks/useLocalStorage";
 import usePopUp from "@/hooks/usePopUp";
 import useTitles from "@/hooks/useTitles";
 import { animated, useSpring } from "@react-spring/web";
-import { animateOpacity } from "@/utils/helpers";
+import { animateOpacity, isLent } from "@/utils/helpers";
 import { BookAdapters } from "@/adapters/book.adapters";
 import { CheckIcon, PlusIcon } from "lucide-react";
 import { isNull, noop } from "es-toolkit";
@@ -13,7 +13,7 @@ import { twJoin, twMerge } from "tailwind-merge";
 import { useEffect, useState } from "react";
 import { type NextRouter, useRouter } from "next/router";
 import { type User, useUser, withUser } from "next-firebase-auth";
-import type { Book, BookData, Component } from "@/utils/types";
+import type { Book, BookData, Component, StateHistoryEntry } from "@/utils/types";
 
 export default withUser()(AddBookToLibraryBtn);
 
@@ -42,7 +42,19 @@ function AddBookToLibraryBtn(props: Props | any): Component {
     startLoading();
     try {
       const id: string = crypto.randomUUID();
-      const bookData: BookData = { ...data, owner: UID ?? "" };
+      const initialState = data.state || "Pending";
+      const initialHistory: StateHistoryEntry[] = [
+        {
+          state: initialState,
+          changedAt: new Date().toISOString(),
+          ...(isLent(initialState) && data.loaned ? { loaned: data.loaned } : {}),
+        },
+      ];
+      const bookData: BookData = {
+        ...data,
+        owner: UID ?? "",
+        stateHistory: initialHistory,
+      };
       const newVersion: Book[] = [...(cacheBooks ?? []), { id, data: bookData }];
       await BookAdapters.manageBook(id, bookData, UID ?? "");
       setIsPressed(true);

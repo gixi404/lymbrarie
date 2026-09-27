@@ -33,6 +33,12 @@ type PopupIds =
   | "recommendation"
   | "suggestions";
 
+interface StateHistoryEntry {
+  state: string;
+  changedAt: string;
+  loaned?: string;
+}
+
 interface Book {
   id: string;
   data: BookData;
@@ -49,6 +55,7 @@ interface BookData {
   notes?: string;
   isFav?: boolean;
   url?: string;
+  stateHistory?: StateHistoryEntry[];
 }
 
 interface ArgsSync {
@@ -69,6 +76,7 @@ export type {
   SortModes,
   Book,
   BookData,
+  StateHistoryEntry,
   Component,
   Doc,
   InputEvent,

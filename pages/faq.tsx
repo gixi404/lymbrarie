@@ -1,3 +1,4 @@
+import BackBtn from "@/components/btns/BackBtn";
 import { animateOpacity } from "@/utils/helpers";
 import { animated, useSpring } from "@react-spring/web";
 import { ChevronRight, ChevronUp } from "lucide-react";
@@ -13,9 +14,10 @@ function FAQ(): Component {
   return (
     <animated.section
       style={styles}
-      className="max-w-2xl w-full space-y-4 pb-24"
+      className="relative max-w-2xl w-full space-y-4 pb-24"
     >
-      <div className="max-w-3xl w-full p-4 h-full">
+      <BackBtn />
+      <div className="w-full h-full">
         <ul className="space-y-4">
           {faqItems.map((item, i) => (
             <li

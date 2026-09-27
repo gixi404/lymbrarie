@@ -1,3 +1,4 @@
+import BackBtn from "@/components/btns/BackBtn";
 import Link from "next/link";
 import { animateOpacity } from "@/utils/helpers";
 import { animated, useSpring } from "@react-spring/web";
@@ -11,6 +12,7 @@ export default function PrivacyPolicyPage(): Component {
       style={styles}
       className="relative max-w-2xl w-full px-6 sm:px-0 mb-16 lg:mb-36 text-slate-200/90 text-sm sm:text-xl flex flex-col justify-start items-center gap-y-8 [&>p]:w-full [&>p]:text-pretty"
     >
+      <BackBtn />
       <p>En Lymbrarie, tu privacidad es una prioridad. Esta política describe cómo recopilamos, usamos y protegemos tu información personal.</p>
       <p>Recopilamos información básica de tu cuenta (nombre, email, foto de perfil) a través de servicios de autenticación de terceros como Google y GitHub. También almacenamos los datos de tu biblioteca personal (libros, notas, estados de lectura) en Firebase.</p>
       <p>No compartimos tu información personal con terceros. Utilizamos tus datos únicamente para proporcionarte el servicio de Lymbrarie y mejorar tu experiencia. Implementamos medidas de seguridad para proteger tu información contra acceso no autorizado.</p>

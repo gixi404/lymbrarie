@@ -38,6 +38,7 @@ function SuggestionsPopUp(): Component {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
   const [newSuggestion, setNewSuggestion] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const q = query(COLLECTION_SUGGESTIONS, orderBy("createdAt", "desc"));
@@ -49,9 +50,10 @@ function SuggestionsPopUp(): Component {
           sugs.push({ id: doc.id, ...doc.data() } as Suggestion);
         });
         setSuggestions(sugs);
+        setIsLoading(false);
       },
       (_error) => {
-        // Silenciosamente capturar errores si la colección lymbrarie_suggestions no tiene permisos de lectura públicos en Firestore
+        setIsLoading(false);
       }
     );
 
@@ -115,13 +117,16 @@ function SuggestionsPopUp(): Component {
       <HeaderPopUp icon={<Icon size={30} />} title="Buzón de Sugerencias" />
 
       <div className="w-full flex flex-col gap-y-5 px-1 sm:px-6 mt-2">
-        <form onSubmit={handleSubmit} className="flex flex-col gap-y-3">
+        <form onSubmit={handleSubmit} autoComplete="off" className="flex flex-col gap-y-3">
           <div className="relative w-full">
             <textarea
               value={newSuggestion}
               onChange={(e) => setNewSuggestion(e.target.value)}
               placeholder="Escribe tu sugerencia aquí..."
               maxLength={500}
+              autoComplete="off"
+              autoCorrect="off"
+              spellCheck="false"
               className="w-full bg-slate-800/50 border-2 border-slate-700 rounded-xl p-4 pb-7 text-slate-200 focus:outline-none focus:border-violet-500 transition-colors resize-none h-32"
               disabled={isSubmitting}
               required
@@ -154,7 +159,12 @@ function SuggestionsPopUp(): Component {
         <div className="flex flex-col gap-y-4 max-h-[40vh] overflow-y-auto pr-2 pb-4">
           <h3 className="font-semibold text-lg text-slate-200">Sugerencias recientes</h3>
 
-          {suggestions.length === 0 ? (
+          {isLoading ? (
+            <div className="flex flex-col items-center justify-center py-8 gap-y-3 text-slate-400">
+              <span className="loading loading-spinner loading-md text-violet-400" />
+              <span className="text-sm font-medium">Cargando sugerencias...</span>
+            </div>
+          ) : suggestions.length === 0 ? (
             <p className="text-slate-400 text-center py-6 italic text-sm">
               Aún no hay sugerencias. ¡Sé el primero en aportar una idea!
             </p>

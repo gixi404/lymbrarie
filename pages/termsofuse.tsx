@@ -1,3 +1,4 @@
+import BackBtn from "@/components/btns/BackBtn";
 import Link from "next/link";
 import { animateOpacity } from "@/utils/helpers";
 import { animated, useSpring } from "@react-spring/web";
@@ -11,6 +12,7 @@ function TermsOfUsePage(): Component {
       style={styles}
       className="relative max-w-2xl w-full px-6 sm:px-0 mb-16 lg:mb-36 text-slate-200/90 text-sm sm:text-xl flex flex-col justify-start items-center gap-y-8 [&>p]:w-full [&>p]:text-pretty"
     >
+      <BackBtn />
       <p>Bienvenido a Lymbrarie. Al utilizar nuestro servicio, aceptas cumplir con estos términos de uso.</p>
       <p>Lymbrarie es una aplicación gratuita para gestionar tu biblioteca personal. Te proporcionamos las herramientas para organizar tus libros, pero tú eres responsable del contenido que agregas.</p>
       <p>Debes tener al menos 13 años para usar Lymbrarie. Al crear una cuenta, garantizas que la información que proporcionas es precisa y actual.</p>

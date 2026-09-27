@@ -120,7 +120,7 @@ export default function HeaderIndex(): Component {
                 pathIs(PAGES.CONFIG) && "text-violet-300/80"
               )}
             />
-            Configuración
+            Preferencias
           </Link>
         </nav>
 
