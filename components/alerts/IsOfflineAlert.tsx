@@ -1,17 +1,20 @@
 import { twMerge } from "tailwind-merge";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { WifiIcon, WifiOffIcon, XIcon } from "lucide-react";
 import type { Component } from "@/utils/types";
 
 function IsOffline(): Component {
   const [isVisible, setIsVisible] = useState<boolean>(false),
     [isOffline, setIsOffline] = useState<boolean>(false),
+    timerRef = useRef<ReturnType<typeof setTimeout> | null>(null),
     handleOnline = (): void => {
       setIsOffline(false);
       setIsVisible(true);
-      setTimeout(() => setIsVisible(false), 5000);
+      if (timerRef.current) clearTimeout(timerRef.current);
+      timerRef.current = setTimeout(() => setIsVisible(false), 5000);
     },
     handleOffline = (): void => {
+      if (timerRef.current) clearTimeout(timerRef.current);
       setIsOffline(true);
       setIsVisible(true);
     };
@@ -25,6 +28,7 @@ function IsOffline(): Component {
     return () => {
       removeEventListener("online", handleOnline);
       removeEventListener("offline", handleOffline);
+      if (timerRef.current) clearTimeout(timerRef.current);
     };
   }, []);
 

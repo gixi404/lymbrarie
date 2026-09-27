@@ -55,7 +55,6 @@ function NotesPopUp(props: Props): Component {
   }, [showPlaceholder]);
 
   useEffect(() => {
-    console.time("[profiling] TinyMCE editor initialization");
     return () => {
       if (autoSaveTimer.current) clearTimeout(autoSaveTimer.current);
     };
@@ -134,7 +133,6 @@ function NotesPopUp(props: Props): Component {
             disabled={loadingFav || isGuest}
             onEditorChange={isGuest ? noop : handleChangeContent}
             onInit={(_evt, editor) => {
-              console.timeEnd("[profiling] TinyMCE editor initialization");
               editorRef.current = editor;
               setEditorLoading(false);
               const initialPlaceholder = isContentEmpty(notes)

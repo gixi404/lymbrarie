@@ -12,7 +12,7 @@ import { isUndefined, sum } from "es-toolkit";
 import { PAGES } from "@/utils/consts";
 import { BOOK_STATES } from "@/utils/states";
 import { scrollAtom, stateAtom } from "@/utils/atoms";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { UserRound } from "lucide-react";
 import { useSetRecoilState } from "recoil";
 import type { Component, Book, Timer } from "@/utils/types";
@@ -70,12 +70,20 @@ function ProfilePage(): Component {
     }
   }, [cacheBooks]);
 
-  function changeState(state: BookState): () => void {
-    if (isMobile) return () => {};
+  const timerRef = useRef<Timer | null>(null);
+
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
+
+  function changeState(state: BookState): void {
+    if (isMobile) return;
     setScroll(430); //* Posición para mostrar los libros sin scrollear manualmente
     setSelectStateVal(state);
-    const timer: Timer = setTimeout(() => setScroll(0), 300);
-    return () => clearTimeout(timer);
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => setScroll(0), 300);
   }
 
   return (

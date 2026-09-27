@@ -1,7 +1,7 @@
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { animated, useSpring } from "@react-spring/web";
 import { animateOpacity } from "@/utils/helpers";
-import { animListAtom, searchAtom, stateAtom } from "@/utils/atoms";
+import { animListAtom } from "@/utils/atoms";
 import { noop } from "es-toolkit";
 import { useRecoilState } from "recoil";
 import type { Component } from "@/utils/types";
@@ -10,12 +10,11 @@ import { useWindowVirtualizer } from "@tanstack/react-virtual";
 
 export default function ListBooks(props: Props): Component {
   const { listBooks, renderItem, showDetails } = props,
-    [searchVal] = useRecoilState<string>(searchAtom),
-    [stateVal] = useRecoilState<string>(stateAtom),
     [animateCard] = useRecoilState<boolean>(animListAtom),
     [animations] = useLocalStorage("animations", true),
     [styles, api] = useSpring(() => noop()),
     parentRef = useRef<HTMLDivElement>(null),
+    listKey = JSON.stringify(listBooks),
     rowVirtualizer = useWindowVirtualizer({
       count: listBooks.length,
       estimateSize: () => (showDetails ? 130 : 60),
@@ -27,7 +26,7 @@ export default function ListBooks(props: Props): Component {
   useEffect(() => {
     if (!animations) return;
     api.start(animateOpacity(1, 600));
-  }, [animateCard, searchVal, stateVal]);
+  }, [animateCard, listKey, animations]);
 
   return (
     <animated.div
@@ -60,7 +59,6 @@ export default function ListBooks(props: Props): Component {
               data-index={virtualRow.index}
               ref={el => {
                 rowVirtualizer.measureElement(el);
-                if (el) console.log("medido:", virtualRow.index, el.getBoundingClientRect().height);
               }}
             >
               {renderItem(item, virtualRow.index)}

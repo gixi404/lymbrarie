@@ -1,5 +1,5 @@
 import { COLLECTION_BOOKS, PAGES } from "@/utils/consts";
-import { isNull } from "es-toolkit";
+import { isNull, isEqual } from "es-toolkit";
 import { type Unsubscribe } from "firebase/auth";
 import type { ArgsSync, Book, BookData, Doc } from "@/utils/types";
 import {
@@ -46,9 +46,16 @@ export class BookAdapters {
           data: d?.data(),
         }));
 
-        props.setCacheBooks(remoteBooks);
-        props.setMyBooks(remoteBooks);
-        props.setAllTitles(remoteBooks.map(b => b?.data?.title ?? ""));
+        props.setCacheBooks((prev: Book[] | null) => 
+          isEqual(prev, remoteBooks) ? prev : remoteBooks
+        );
+        props.setMyBooks((prev: Book[]) => 
+          isEqual(prev, remoteBooks) ? prev : remoteBooks
+        );
+        props.setAllTitles((prev: string[]) => {
+          const newTitles = remoteBooks.map(b => b?.data?.title ?? "");
+          return isEqual(prev, newTitles) ? prev : newTitles;
+        });
       });
 
       return unsub;
