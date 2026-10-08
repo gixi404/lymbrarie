@@ -18,6 +18,7 @@ const Nav = memo(function Nav(): Component {
       >
         &gt;&nbsp;&nbsp;Biblioteca
       </Link>
+
       <Link
         className={
           pathIs(PAGES.PROFILE) ? "text-violet-300/95" : "text-slate-200"

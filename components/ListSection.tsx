@@ -5,7 +5,7 @@ import ListBooks from "./ListBooks";
 import NoMatchesText from "./NoMatchesText";
 import SortBtn from "./btns/SortBtn";
 import useLocalStorage from "@/hooks/useLocalStorage";
-import { deburr, delay, isEqual, isNull, orderBy, shuffle } from "es-toolkit";
+import { deburr, delay, isNull, orderBy, shuffle } from "es-toolkit";
 import { len, mapStateToEnglish, pathIs, tLC } from "@/utils/helpers";
 import { memo, useCallback, useEffect, useMemo, useState } from "react";
 import { PAGES } from "@/utils/consts";
@@ -97,6 +97,7 @@ const ListSection = memo(function B(props: Props) {
   }, [filteredBooks, ascSort]);
 
   const sortedBooks: BookData[] = useMemo(() => {
+    if (len(filteredBooks) === 0) return [];
     const data: BookData[] = filteredBooks.map(b => b?.data),
       order: Order = ascSort == "asc" ? ["asc", "desc"] : ["desc", "asc"];
     return ascSort == "random"
@@ -105,14 +106,9 @@ const ListSection = memo(function B(props: Props) {
   }, [filteredBooks, ascSort, shuffledData]);
 
   const noMatches: boolean = useMemo(() => {
-    return (
-      (isEqual(len(filteredBooks), 0) && !isEqual(searchVal, "")) ||
-      (isEqual(len(sortedBooks), 0) && showFavs) ||
-      (isEqual(searchVal, "") &&
-        !isEqual(stateVal, "") &&
-        isEqual(len(sortedBooks), 0))
-    );
-  }, [filteredBooks, sortedBooks, searchVal, showFavs, stateVal]);
+    const hasFilterActive = Boolean(searchVal || stateVal || showFavs);
+    return len(filteredBooks) === 0 && (hasFilterActive || len(myBooks) > 0);
+  }, [filteredBooks, searchVal, stateVal, showFavs, myBooks]);
 
   const renderBookItem = useCallback(
     (book: BookData, _index: number): Component => (
@@ -162,7 +158,7 @@ const ListSection = memo(function B(props: Props) {
       )}
       {noMatches ? (
         <NoMatchesText
-          txt={showFavs && !searchVal ? "no-favs" : "no-matches"}
+          txt={showFavs && !searchVal && !stateVal ? "no-favs" : "no-matches"}
         />
       ) : (
         <ListBooks listBooks={sortedBooks} renderItem={renderBookItem} showDetails={showDetails} />

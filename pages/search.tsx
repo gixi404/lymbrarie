@@ -1,16 +1,13 @@
-import AnnasURL from "@/components/AnnasURL";
-import Head from "next/head";
 import InputSearch from "@/components/InputSearch";
 import ListSection from "@/components/ListSection";
 import LoaderCircle from "@/components/LoaderCircle";
-import ResultsFrom from "@/components/ResultsFrom";
 import SearchBanner from "@/components/banners/SearchBanner";
 import TryDifferentTerms from "@/components/TryDifferentTerms";
 import useLoad from "@/hooks/useLoad";
 import useLocalStorage from "@/hooks/useLocalStorage";
 import { animateOpacity, len, tLC } from "@/utils/helpers";
 import { animated, useSpring } from "@react-spring/web";
-import { API_BOOKS, PAGES } from "@/utils/consts";
+import { PAGES } from "@/utils/consts";
 import { BOOK_STATES } from "@/utils/states";
 import {
   type Auth,
@@ -25,8 +22,6 @@ import { AuthAction, type User, useUser, withUser } from "next-firebase-auth";
 import type { Book, Component } from "@/utils/types";
 import { useRouter, type NextRouter } from "next/router";
 
-const KEY = process.env.API_KEY_BOOKS as string;
-
 export default withUser({
   whenAuthed: AuthAction.RENDER,
   whenUnauthedBeforeInit: AuthAction.SHOW_LOADER,
@@ -40,7 +35,6 @@ function SearchPage(): Component {
     router: NextRouter = useRouter(),
     [query, setQuery] = useState<string>(""),
     [queryVal, setQueryVal] = useState<string>(""),
-    [showIcon, setShowIcon] = useState<boolean>(true),
     [booksResults, setBooksResults] = useState<Book[]>([]),
     { isLoading, startLoading, finishLoading } = useLoad(),
     [animations] = useLocalStorage("animations", true),
@@ -72,25 +66,26 @@ function SearchPage(): Component {
     startLoading();
 
     try {
-      const ENDPOINT: string = `${API_BOOKS}?q=${searchQuery}&maxResults=40&key=${KEY}`,
+      const ENDPOINT: string = `https://openlibrary.org/search.json?q=${searchQuery}&limit=40`,
         options: RequestInit = {
           mode: "cors",
           method: "GET",
           cache: "default",
-          headers: { "Content-Type": "application/json" },
         },
         res: Response = await fetch(ENDPOINT, options),
         data = await res.json(),
-        books: Book[] = (data.items || []).map((b: GoogleBook) => ({
-          id: b?.id,
+        books: Book[] = (data.docs || []).map((b: any) => ({
+          id: b?.key,
           data: {
             //* Slash reemplazado porque genera error en la ruta dinámica.
-            title: (b?.volumeInfo?.title).replaceAll("/", "-"),
-            author: b?.volumeInfo?.authors?.join(", "),
-            notes: b?.volumeInfo?.description ?? "",
-            gender: b?.volumeInfo?.categories?.join(", ") || "no-gender",
-            image: b?.volumeInfo?.imageLinks?.thumbnail,
-            url: b?.volumeInfo?.canonicalVolumeLink,
+            title: (b?.title ?? "").replaceAll("/", "-"),
+            author: b?.author_name ? b.author_name.join(", ") : "",
+            notes: "",
+            gender: "Sin asignar",
+            image: b?.cover_i ? `https://covers.openlibrary.org/b/id/${b.cover_i}-L.jpg` : "",
+            url: `https://openlibrary.org${b?.key ?? ""}`,
+            publishYear: b?.first_publish_year,
+            editionCount: b?.edition_count,
             loaned: "",
             state: BOOK_STATES.PENDING.es,
             isFav: false,
@@ -120,7 +115,6 @@ function SearchPage(): Component {
   async function onSubmit(e: FormEvent): Promise<void> {
     e.preventDefault();
     if (!query.trim()) return;
-    setShowIcon(false);
 
     router.push(
       {
@@ -136,30 +130,18 @@ function SearchPage(): Component {
     searchBooks(query);
   }
 
-  function clearResults(): void {
-    setBooksResults([]);
-    setQueryVal("");
-    setShowIcon(true);
-    router.push(PAGES.SEARCH, undefined, { shallow: true });
-  }
-
   return (
     <animated.section
       style={styles}
       className="relative max-w-4xl w-full px-3 sm:px-0 mb-16 lg:mb-36 text-slate-200/90 flex flex-col justify-start items-center gap-y-6 min-h-[350px]"
     >
-      <Head>
-        <title>Lymbrarie - Buscador de libros</title>
-      </Head>
-
-      {showIcon && <SearchBanner />}
+      <SearchBanner />
 
       <form
         onSubmit={onSubmit}
         className="w-full flex flex-col items-center justify-center gap-y-4 px-6 sm:px-0"
       >
         <InputSearch query={query} setQuery={setQuery} isLoading={isLoading} />
-        <AnnasURL />
       </form>
 
       <animated.div
@@ -174,7 +156,6 @@ function SearchPage(): Component {
         ) : (
           len(booksResults) > 0 && (
             <div className="w-full max-w-3xl flex flex-col justify-center items-center gap-y-6">
-              <ResultsFrom queryVal={queryVal} clearResults={clearResults} />
               <ListSection myBooks={booksResults} isSearch />
             </div>
           )
@@ -192,40 +173,4 @@ function replaceInvalidChars(str: string): string {
   return str.replaceAll(/[_@\/]/g, "-");
 }
 
-type GoogleBook = {
-  kind: string;
-  id: string;
-  etag: string;
-  selfLink: string;
-  volumeInfo: {
-    title: string;
-    authors?: string[];
-    publisher?: string;
-    publishedDate?: string;
-    description?: string;
-    industryIdentifiers?: Array<{
-      type: string;
-      identifier: string;
-    }>;
-    pageCount?: number;
-    categories?: string[];
-    imageLinks?: {
-      smallThumbnail: string;
-      thumbnail: string;
-    };
-    language?: string;
-    canonicalVolumeLink: string;
-  };
-  saleInfo: {
-    country: string;
-    saleability: string;
-    isEbook: boolean;
-  };
-  accessInfo: {
-    country: string;
-    viewability: string;
-    pdf: {
-      isAvailable: boolean;
-    };
-  };
-};
+

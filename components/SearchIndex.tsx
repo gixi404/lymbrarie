@@ -24,7 +24,7 @@ export default function SearchIndex(): Component {
     handleSelect: Handler<string, void> = (val: string) =>
       setSelectStateVal(val),
     options = [
-      { value: "", label: "Todo" },
+      { value: "", label: "Todos" },
       ...Object.values(BOOK_STATES)
         .filter(s => s !== BOOK_STATES.RECOMMENDED)
         .map(s => ({
@@ -34,7 +34,7 @@ export default function SearchIndex(): Component {
     ],
     getPlaceholder = (): string => {
       const option = options.find(opt => opt.value === selectVal);
-      return option ? option.label : "Todo";
+      return option ? option.label : "Todos";
     };
 
   return (

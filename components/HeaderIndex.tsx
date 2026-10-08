@@ -67,6 +67,7 @@ export default function HeaderIndex(): Component {
             />
             Biblioteca
           </Link>
+
           {/* <Link
             onClick={() => setScroll(0)}
             href={PAGES.WRITER}

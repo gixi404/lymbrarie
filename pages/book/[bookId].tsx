@@ -3,7 +3,6 @@ import DEFAULT_COVER from "@/public/cover.webp";
 import DeleteBookPopUp from "@/components/popups/DeleteBookPopUp";
 import EditBookPopUp from "@/components/popups/EditBookPopUp";
 import HistoryPopUp from "@/components/popups/HistoryPopUp";
-import Head from "next/head";
 import Image from "next/image";
 import LoaderCircle from "@/components/LoaderCircle";
 import NotesPopUp from "@/components/popups/NotesPopUp";
@@ -279,10 +278,6 @@ function BookId(): Component {
       style={stylesSection}
       className="flex flex-col justify-start items-center w-full relative"
     >
-      <Head>
-        <title translate="no">{book?.data?.title || "Lymbrarie"}</title>
-      </Head>
-
       {popup.offline && <OfflinePopUp />}
       {popup.edit_book && <EditBookPopUp data={book} documentId={documentId} UID={user.id as string} />}
       {popup.notes && <NotesPopUp {...notesProps} />}

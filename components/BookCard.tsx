@@ -44,6 +44,8 @@ const BookCard = memo(function BookCard({ data, showDetails }: Props): Component
       loaned: data.loaned ?? "",
       state: data.state ?? "",
       url: data.url ?? "",
+      publishYear: data.publishYear,
+      editionCount: data.editionCount,
     } as const;
 
   function onClick(): Promise<boolean> {
@@ -132,4 +134,6 @@ interface SearchedProps {
   loaned: string;
   state: string;
   url: string;
+  publishYear?: number | string;
+  editionCount?: number;
 }

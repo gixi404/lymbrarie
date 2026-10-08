@@ -56,6 +56,8 @@ interface BookData {
   notes?: string;
   isFav?: boolean;
   url?: string;
+  publishYear?: number | string;
+  editionCount?: number;
   stateHistory?: StateHistoryEntry[];
 }
 

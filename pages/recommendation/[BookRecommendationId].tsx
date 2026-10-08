@@ -1,6 +1,5 @@
 import AddBookToLibraryBtn from "@/components/btns/AddBookToLibraryBtn";
 import BackBtn from "@/components/btns/BackBtn";
-import Head from "next/head";
 import Image from "next/image";
 import LogInPopUp from "@/components/popups/LogInPopUp";
 import NotesPopUp from "@/components/popups/NotesPopUp";
@@ -46,10 +45,6 @@ function BookRecommendationId(): Component {
       style={stylesSection}
       className="flex flex-col justify-start items-center w-full relative"
     >
-      <Head>
-        <title translate="no">{BOOK_RECO.title || "Lymbrarie"}</title>
-      </Head>
-
       {popup.login && <LogInPopUp />}
       {popup.notes && <NotesPopUp {...notesProps} />}
 

@@ -10,7 +10,7 @@ export default function SuggestionsBtn(): Component {
     <button
       type="button"
       onClick={() => setPopups({ ...popups, suggestions: true })}
-      className="absolute top-5 left-5 z-30 flex items-center justify-center bg-slate-900/90 hover:bg-slate-800 text-violet-300 hover:text-violet-100 border border-violet-500/30 hover:border-violet-500/60 p-3 rounded-xl shadow-xl backdrop-blur-md transition-all duration-300 group hover:scale-105"
+      className="absolute top-5 left-5 z-30 hidden md:flex items-center justify-center bg-slate-900/90 hover:bg-slate-800 text-violet-300 hover:text-violet-100 border border-violet-500/30 hover:border-violet-500/60 p-3 rounded-xl shadow-xl backdrop-blur-md transition-all duration-300 group hover:scale-105"
       title="Buzón de sugerencias"
       aria-label="Buzón de sugerencias"
     >
