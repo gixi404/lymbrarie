@@ -19,8 +19,10 @@ export default function SearchIndex(): Component {
     [value, setValue] = useRecoilState<string>(searchAtom),
     [selectVal, setSelectStateVal] = useRecoilState<string>(stateAtom),
     { isMobile } = useIsMobile(),
-    handleSearch: Handler<InputEvent, void> = (e: InputEvent) =>
-      setValue(e.target.value),
+    handleSearch: Handler<InputEvent, void> = (e: InputEvent) => {
+      const val = e.target.value;
+      setValue(val.trim() === "" ? "" : val);
+    },
     handleSelect: Handler<string, void> = (val: string) =>
       setSelectStateVal(val),
     options = [

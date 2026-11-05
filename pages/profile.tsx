@@ -144,7 +144,9 @@ function ProfilePage(): Component {
           onClick={() => changeState(BOOK_STATES.LENT.es)}
           className="bg-slate-900/40 hover:bg-slate-900 backdrop-blur-sm p-6 rounded-xl border border-violet-500/20 flex flex-col items-center gap-y-2 transition-all"
         >
-          <p className="text-lg font-medium text-white">Prestados</p>
+          <p className="text-lg font-medium text-white">
+            {BOOK_STATES.LENT.es}
+          </p>
           <p className="text-4xl font-light text-violet-200">
             {isGuest ? 1 : Lent}
           </p>

@@ -1,6 +1,7 @@
 import type { StylesConfig } from "react-select";
 import type { Handler } from "./types";
 import { translateState, mapStateToEnglish, isLent } from "./states";
+import { GENDERS } from "./consts";
 
 function selectStyles(
   showAll: boolean,
@@ -108,6 +109,21 @@ function translateGender(gender: string): string {
   return genderMap[lowerGender] || gender;
 }
 
+function getStandardGender(gender?: string): string | undefined {
+  if (!gender) return undefined;
+  const norm = translateGender(gender);
+  return GENDERS.find(
+    g => g !== "Personalizado" && (tLC(g) === tLC(gender) || tLC(g) === tLC(norm))
+  );
+}
+
+function isCustomGenderValue(gender?: string): boolean {
+  if (!gender) return false;
+  const trimmed = gender.trim();
+  if (trimmed === "Personalizado" || trimmed === "custom") return true;
+  return !getStandardGender(trimmed);
+}
+
 function pathIs(path: string, options?: PathOptions): boolean {
   const pathname: string = window?.location?.pathname;
   if (options?.exact) return pathname === path;
@@ -143,6 +159,8 @@ export {
   animateOpacity,
   animatePopup,
   clearStorage,
+  getStandardGender,
+  isCustomGenderValue,
   isLent,
   len,
   mapStateToEnglish,

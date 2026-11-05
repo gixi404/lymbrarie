@@ -3,7 +3,7 @@ import InputCover from "./InputCover";
 import { GENDERS } from "@/utils/consts";
 import { BOOK_STATES } from "@/utils/states";
 import { isEqual } from "es-toolkit";
-import { tLC } from "@/utils/helpers";
+import { getStandardGender, isCustomGenderValue } from "@/utils/helpers";
 import { twMerge } from "tailwind-merge";
 import type { Component, InputEvent } from "@/utils/types";
 import {
@@ -22,6 +22,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
       errorKey,
       handleChange,
       isLoading,
+      cusGenderVal,
       setCusGenderVal,
       handleImage,
       isCustomGender,
@@ -36,7 +37,8 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
       defaultValueImg = "",
       isEditing,
     } = props,
-    applyGender: boolean = GENDERS.includes(tLC(defaultValueGender));
+    standardGender = getStandardGender(defaultValueGender),
+    isCustomDefault = isCustomGenderValue(defaultValueGender);
 
   return (
     <>
@@ -108,11 +110,11 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
             onChange={handleGender}
             disabled={isLoading}
             defaultValue={
-              applyGender
-                ? defaultValueGender
-                : !defaultValueGender
-                ? "default"
-                : "custom"
+              standardGender
+                ? standardGender
+                : isCustomDefault
+                ? "Personalizado"
+                : "default"
             }
             className="pl-7 w-full bg-slate-900 text-slate-300 text-sm sm:text-base md:text-lg focus:outline-none disabled:opacity-50 appearance-none cursor-pointer h-full"
           >
@@ -144,6 +146,7 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
             <TypeIcon size={18} className="text-violet-300 mr-3 flex-shrink-0" />
             <input
               id="gender-input"
+              value={cusGenderVal ?? ""}
               onChange={(e: InputEvent) => {
                 handleChange(e);
                 setCusGenderVal(e.target.value);
@@ -157,7 +160,6 @@ const FieldsBook = memo(function FieldsBook(props: Props): Component {
               spellCheck="false"
               className="w-full bg-transparent text-slate-200 text-sm sm:text-base md:text-lg placeholder:text-slate-400 focus:outline-none disabled:opacity-50"
               placeholder="Personalizado"
-              defaultValue={applyGender ? "Mi género" : defaultValueGender}
             />
           </label>
         )}
@@ -244,6 +246,7 @@ interface Props {
   errorKey: string;
   handleChange: (e: InputEvent) => void;
   isLoading?: boolean;
+  cusGenderVal?: string;
   setCusGenderVal: (value: string) => void;
   isCustomGender: boolean;
   handleGender: ChangeEventHandler<HTMLSelectElement>;

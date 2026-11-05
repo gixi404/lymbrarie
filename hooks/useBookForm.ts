@@ -53,14 +53,15 @@ export function useBookForm(): UseBookFormReturn {
 
   function handleGender(e: SelectEvent): void {
     const gender: string = e.target.value.trim();
-    setIsCustomGender(isEqual(gender, "custom"));
-    setBook((prev) => ({ ...prev, gender }));
+    const isCustom = isEqual(gender, "Personalizado") || isEqual(gender, "custom");
+    setIsCustomGender(isCustom);
+    setBook((prev) => ({ ...prev, gender: isCustom ? cusGenderVal : gender }));
   }
 
   function validateFields(isRepeated?: boolean): boolean {
     const maxTitleLength = len(formatTitle) > MAX_TITLE_LENGTH;
     const maxAuthorLength = len(book.author ?? "0") > MAX_AUTHOR_LENGTH;
-    const emptyCustomGender = isCustomGender && !cusGenderVal;
+    const emptyCustomGender = isCustomGender && !cusGenderVal.trim();
     const maxLengthGender = isCustomGender && len(cusGenderVal) > MAX_FIELD_LENGTH;
     const emptyLoaned = isLent(book.state ?? "") && !book.loaned?.trim();
     const maxLengthLoaned = isLent(book.state ?? "") && len(book.loaned ?? "0") > MAX_FIELD_LENGTH;

@@ -6,8 +6,8 @@ import usePopUp from "@/hooks/usePopUp";
 import { BookAdapters } from "@/adapters/book.adapters";
 import { deburr, isEqual } from "es-toolkit";
 import { dismissNoti, notification } from "@/utils/notifications";
-import { GENDERS, PAGES } from "@/utils/consts";
-import { tLC, isLent } from "@/utils/helpers";
+import { PAGES } from "@/utils/consts";
+import { tLC, isLent, isCustomGenderValue } from "@/utils/helpers";
 import { scrollAtom, coverAtom } from "@/utils/atoms";
 import { useRecoilState, useRecoilValue } from "recoil";
 import type { Book, BookData, Component, StateHistoryEntry } from "@/utils/types";
@@ -33,6 +33,7 @@ function EditBookPopUp(props: Props): Component {
       isLoading, startLoading,
       errorKey,
       isCustomGender, setIsCustomGender,
+      cusGenderVal,
       setCusGenderVal,
       addClicked, setAddClicked,
       handleChange, handleState, handleImage, handleGender,
@@ -68,8 +69,9 @@ function EditBookPopUp(props: Props): Component {
       stateHistory: data?.stateHistory ?? [],
     };
     setBook(loadData);
-    setIsCustomGender(!GENDERS.includes(tLC(data?.gender ?? "")));
-    setCusGenderVal(data?.gender ?? "");
+    const isCustom = isCustomGenderValue(data?.gender);
+    setIsCustomGender(isCustom);
+    setCusGenderVal(isCustom ? (data?.gender ?? "") : "");
   }
 
   async function editBook(e: FormEvent): Promise<void> {
@@ -168,6 +170,7 @@ function EditBookPopUp(props: Props): Component {
         errorKey={errorKey}
         handleChange={handleChange}
         isLoading={isLoading}
+        cusGenderVal={cusGenderVal}
         setCusGenderVal={setCusGenderVal}
         isCustomGender={isCustomGender}
         handleGender={handleGender}

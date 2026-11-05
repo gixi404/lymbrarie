@@ -27,6 +27,7 @@ function NewBookPopUp({ UID }: Props): Component {
       isLoading, startLoading,
       errorKey,
       isCustomGender,
+      cusGenderVal,
       setCusGenderVal,
       handleChange, handleState, handleImage, handleGender,
       validateFields,
@@ -76,6 +77,7 @@ function NewBookPopUp({ UID }: Props): Component {
         errorKey={errorKey}
         handleChange={handleChange}
         isLoading={isLoading}
+        cusGenderVal={cusGenderVal}
         setCusGenderVal={setCusGenderVal}
         isCustomGender={isCustomGender}
         handleGender={handleGender}
